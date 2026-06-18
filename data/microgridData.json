@@ -3,144 +3,192 @@
     "timestamp": "2026-06-19T00:00:00Z",
     "temperature": 18.2,
     "cloud_cover": 41.3,
-    "conditions": "Cloudy"
+    "solar_generation": 0.0,
+    "total_demand": 207.1,
+    "battery_level": 95.9
   },
   {
     "timestamp": "2026-06-19T01:00:00Z",
     "temperature": 17.6,
     "cloud_cover": 18.9,
-    "conditions": "Clear"
+    "solar_generation": 0.0,
+    "total_demand": 201.3,
+    "battery_level": 91.9
   },
   {
     "timestamp": "2026-06-19T02:00:00Z",
     "temperature": 17.2,
     "cloud_cover": 38.0,
-    "conditions": "Cloudy"
+    "solar_generation": 0.0,
+    "total_demand": 186.5,
+    "battery_level": 88.2
   },
   {
     "timestamp": "2026-06-19T03:00:00Z",
     "temperature": 15.6,
     "cloud_cover": 11.5,
-    "conditions": "Clear"
+    "solar_generation": 0.0,
+    "total_demand": 192.0,
+    "battery_level": 84.4
   },
   {
     "timestamp": "2026-06-19T04:00:00Z",
     "temperature": 15.6,
     "cloud_cover": 14.3,
-    "conditions": "Clear"
+    "solar_generation": 0.0,
+    "total_demand": 200.0,
+    "battery_level": 80.4
   },
   {
     "timestamp": "2026-06-19T05:00:00Z",
     "temperature": 16.5,
     "cloud_cover": 33.3,
-    "conditions": "Cloudy"
+    "solar_generation": 0.0,
+    "total_demand": 213.5,
+    "battery_level": 76.1
   },
   {
     "timestamp": "2026-06-19T06:00:00Z",
     "temperature": 17.0,
     "cloud_cover": 17.4,
-    "conditions": "Sunny"
+    "solar_generation": 127.8,
+    "total_demand": 215.1,
+    "battery_level": 74.4
   },
   {
     "timestamp": "2026-06-19T07:00:00Z",
     "temperature": 19.6,
     "cloud_cover": 34.5,
-    "conditions": "Partly Cloudy"
+    "solar_generation": 206.9,
+    "total_demand": 391.5,
+    "battery_level": 70.7
   },
   {
     "timestamp": "2026-06-19T08:00:00Z",
     "temperature": 21.8,
     "cloud_cover": 17.6,
-    "conditions": "Sunny"
+    "solar_generation": 310.1,
+    "total_demand": 414.6,
+    "battery_level": 68.6
   },
   {
     "timestamp": "2026-06-19T09:00:00Z",
     "temperature": 22.4,
     "cloud_cover": 36.1,
-    "conditions": "Partly Cloudy"
+    "solar_generation": 336.0,
+    "total_demand": 416.6,
+    "battery_level": 67.0
   },
   {
     "timestamp": "2026-06-19T10:00:00Z",
     "temperature": 23.7,
     "cloud_cover": 15.3,
-    "conditions": "Sunny"
+    "solar_generation": 424.8,
+    "total_demand": 395.9,
+    "battery_level": 67.3
   },
   {
     "timestamp": "2026-06-19T11:00:00Z",
     "temperature": 26.1,
     "cloud_cover": 26.1,
-    "conditions": "Partly Cloudy"
+    "solar_generation": 426.1,
+    "total_demand": 211.2,
+    "battery_level": 69.4
   },
   {
     "timestamp": "2026-06-19T12:00:00Z",
     "temperature": 27.2,
     "cloud_cover": 17.8,
-    "conditions": "Sunny"
+    "solar_generation": 455.5,
+    "total_demand": 203.3,
+    "battery_level": 71.9
   },
   {
     "timestamp": "2026-06-19T13:00:00Z",
     "temperature": 27.7,
     "cloud_cover": 15.7,
-    "conditions": "Sunny"
+    "solar_generation": 451.5,
+    "total_demand": 180.7,
+    "battery_level": 74.6
   },
   {
     "timestamp": "2026-06-19T14:00:00Z",
     "temperature": 30.8,
     "cloud_cover": 32.8,
-    "conditions": "Partly Cloudy"
+    "solar_generation": 384.6,
+    "total_demand": 211.4,
+    "battery_level": 76.3
   },
   {
     "timestamp": "2026-06-19T15:00:00Z",
     "temperature": 32.3,
     "cloud_cover": 25.5,
-    "conditions": "Partly Cloudy"
+    "solar_generation": 357.7,
+    "total_demand": 181.0,
+    "battery_level": 78.1
   },
   {
     "timestamp": "2026-06-19T16:00:00Z",
     "temperature": 30.0,
     "cloud_cover": 26.1,
-    "conditions": "Partly Cloudy"
+    "solar_generation": 295.6,
+    "total_demand": 192.6,
+    "battery_level": 79.1
   },
   {
     "timestamp": "2026-06-19T17:00:00Z",
     "temperature": 30.1,
     "cloud_cover": 32.9,
-    "conditions": "Partly Cloudy"
+    "solar_generation": 208.9,
+    "total_demand": 596.8,
+    "battery_level": 71.3
   },
   {
     "timestamp": "2026-06-19T18:00:00Z",
     "temperature": 29.5,
     "cloud_cover": 15.0,
-    "conditions": "Sunny"
+    "solar_generation": 129.5,
+    "total_demand": 609.6,
+    "battery_level": 61.7
   },
   {
     "timestamp": "2026-06-19T19:00:00Z",
     "temperature": 28.5,
     "cloud_cover": 52.4,
-    "conditions": "Cloudy"
+    "solar_generation": 0.0,
+    "total_demand": 604.0,
+    "battery_level": 49.6
   },
   {
     "timestamp": "2026-06-19T20:00:00Z",
     "temperature": 26.0,
     "cloud_cover": 18.0,
-    "conditions": "Clear"
+    "solar_generation": 0.0,
+    "total_demand": 609.1,
+    "battery_level": 37.4
   },
   {
     "timestamp": "2026-06-19T21:00:00Z",
     "temperature": 26.0,
     "cloud_cover": 25.1,
-    "conditions": "Clear"
+    "solar_generation": 0.0,
+    "total_demand": 600.3,
+    "battery_level": 25.4
   },
   {
     "timestamp": "2026-06-19T22:00:00Z",
     "temperature": 25.0,
     "cloud_cover": 39.9,
-    "conditions": "Cloudy"
+    "solar_generation": 0.0,
+    "total_demand": 593.3,
+    "battery_level": 13.5
   },
   {
     "timestamp": "2026-06-19T23:00:00Z",
     "temperature": 24.3,
     "cloud_cover": 29.9,
-    "conditions": "Clear"
+    "solar_generation": 0.0,
+    "total_demand": 190.1,
+    "battery_level": 9.7
   }
 ]

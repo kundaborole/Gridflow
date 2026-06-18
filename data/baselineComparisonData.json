@@ -1,0 +1,37 @@
+[
+  {
+    "day": 1,
+    "without_gridflow_cost": 6238.95,
+    "with_gridflow_cost": 5177.59
+  },
+  {
+    "day": 2,
+    "without_gridflow_cost": 5117.52,
+    "with_gridflow_cost": 3816.11
+  },
+  {
+    "day": 3,
+    "without_gridflow_cost": 5085.03,
+    "with_gridflow_cost": 3948.03
+  },
+  {
+    "day": 4,
+    "without_gridflow_cost": 6230.01,
+    "with_gridflow_cost": 4918.6
+  },
+  {
+    "day": 5,
+    "without_gridflow_cost": 5123.83,
+    "with_gridflow_cost": 4102.97
+  },
+  {
+    "day": 6,
+    "without_gridflow_cost": 5592.56,
+    "with_gridflow_cost": 4656.1
+  },
+  {
+    "day": 7,
+    "without_gridflow_cost": 5210.62,
+    "with_gridflow_cost": 4072.51
+  }
+]

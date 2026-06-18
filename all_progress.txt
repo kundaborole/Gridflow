@@ -1,0 +1,541 @@
+
+
+--- C:\Users\kunda\OneDrive\Desktop\data\README.md ---
+
+
+# GridFlow AI
+
+## Problem Statement
+Modern energy grids face unprecedented challenges with the rise of decentralized renewable energy sources and electric vehicle adoption. Managing peak demand, minimizing transmission losses, and ensuring grid stability requires intelligent, real-time load balancing and forecasting.
+
+## Features
+- **Real-Time Data Simulation**: Mock data generation for households, weather, batteries, and grid energy flow.
+- **AI-Powered Demand Forecasting**: Predicts peak consumption and solar generation.
+- **Smart Battery Management**: Automated energy transfer recommendations between storage nodes.
+- **Interactive Dashboard**: Visualizes grid health, battery levels, and energy distribution.
+
+## Architecture Diagram
+
+```mermaid
+graph TD
+    A[Frontend: Next.js Dashboard] <-->|REST/GraphQL| B(Backend: FastAPI / Node.js)
+    B <--> C{AI Engine: Demand/Forecast}
+    B <--> D[(Database / Data Simulation)]
+    
+    D --> E[weatherData.json]
+    D --> F[energyData.json]
+    D --> G[batteryData.json]
+    D --> H[households.json]
+```
+
+## Tech Stack
+- **Frontend**: Next.js, React, TailwindCSS
+- **Backend**: FastAPI (Python) / Node.js
+- **AI/ML Engine**: Python, Scikit-learn / TensorFlow
+- **Data**: JSON Mock Databases
+
+## Setup Instructions
+
+1. **Clone the repository**:
+   ```bash
+   git clone <GITHUB_REPOSITORY_URL>
+   cd gridflow-ai
+   ```
+
+2. **Frontend Setup**:
+   ```bash
+   cd frontend
+   npm install
+   npm run dev
+   ```
+
+3. **Backend Setup**:
+   ```bash
+   cd backend
+   python -m venv venv
+   source venv/bin/activate  # On Windows use `venv\Scripts\activate`
+   pip install -r requirements.txt
+   uvicorn main:app --reload
+   ```
+
+## API Endpoints (Proposed)
+- `GET /api/v1/energy`: Retrieve current grid status
+- `GET /api/v1/batteries`: Retrieve battery states
+- `GET /api/v1/households`: Retrieve household consumption profiles
+- `POST /api/v1/recommend`: Generate an AI energy transfer recommendation
+
+## Demo Flow
+1. **Initialize Data**: Load mock data into the AI model.
+2. **Forecast**: AI predicts an incoming deficit in the residential sector.
+3. **Recommend**: The engine suggests transferring 15 kWh from an industrial reserve battery.
+4. **Visualize**: The dashboard updates to reflect the stable grid after the simulated transfer.
+
+## Future Improvements
+- Implement live weather API integrations.
+- Train predictive models on real-world Smart Grid datasets.
+- Add multi-tenant support for different regional grids.
+
+
+
+--- C:\Users\kunda\OneDrive\Desktop\data\data\batteryData.json ---
+
+
+[
+  {
+    "batteryId": "BATT-001",
+    "batteryName": "Main Facility Storage A",
+    "level": 85,
+    "status": "Charging"
+  },
+  {
+    "batteryId": "BATT-002",
+    "batteryName": "Main Facility Storage B",
+    "level": 92,
+    "status": "Stable"
+  },
+  {
+    "batteryId": "BATT-003",
+    "batteryName": "Substation Alpha Backup",
+    "level": 45,
+    "status": "Discharging"
+  },
+  {
+    "batteryId": "BATT-004",
+    "batteryName": "Community Solar Hub",
+    "level": 60,
+    "status": "Charging"
+  },
+  {
+    "batteryId": "BATT-005",
+    "batteryName": "Industrial Park Reserve",
+    "level": 22,
+    "status": "Discharging"
+  }
+]
+
+
+
+--- C:\Users\kunda\OneDrive\Desktop\data\data\energyData.json ---
+
+
+[
+  {
+    "time": "00:00",
+    "solar": 0,
+    "consumption": 400,
+    "battery": 20
+  },
+  {
+    "time": "01:00",
+    "solar": 0,
+    "consumption": 350,
+    "battery": 20
+  },
+  {
+    "time": "02:00",
+    "solar": 0,
+    "consumption": 320,
+    "battery": 20
+  },
+  {
+    "time": "03:00",
+    "solar": 0,
+    "consumption": 300,
+    "battery": 20
+  },
+  {
+    "time": "04:00",
+    "solar": 0,
+    "consumption": 310,
+    "battery": 20
+  },
+  {
+    "time": "05:00",
+    "solar": 0,
+    "consumption": 450,
+    "battery": 20
+  },
+  {
+    "time": "06:00",
+    "solar": 100,
+    "consumption": 700,
+    "battery": 20
+  },
+  {
+    "time": "07:00",
+    "solar": 400,
+    "consumption": 900,
+    "battery": 20
+  },
+  {
+    "time": "08:00",
+    "solar": 800,
+    "consumption": 850,
+    "battery": 20
+  },
+  {
+    "time": "09:00",
+    "solar": 1200,
+    "consumption": 750,
+    "battery": 30
+  },
+  {
+    "time": "10:00",
+    "solar": 1600,
+    "consumption": 700,
+    "battery": 45
+  },
+  {
+    "time": "11:00",
+    "solar": 2000,
+    "consumption": 680,
+    "battery": 65
+  },
+  {
+    "time": "12:00",
+    "solar": 2300,
+    "consumption": 650,
+    "battery": 85
+  },
+  {
+    "time": "13:00",
+    "solar": 2400,
+    "consumption": 640,
+    "battery": 100
+  },
+  {
+    "time": "14:00",
+    "solar": 2300,
+    "consumption": 650,
+    "battery": 100
+  },
+  {
+    "time": "15:00",
+    "solar": 1800,
+    "consumption": 700,
+    "battery": 100
+  },
+  {
+    "time": "16:00",
+    "solar": 1200,
+    "consumption": 800,
+    "battery": 100
+  },
+  {
+    "time": "17:00",
+    "solar": 600,
+    "consumption": 1000,
+    "battery": 100
+  },
+  {
+    "time": "18:00",
+    "solar": 100,
+    "consumption": 1500,
+    "battery": 90
+  },
+  {
+    "time": "19:00",
+    "solar": 0,
+    "consumption": 2200,
+    "battery": 70
+  },
+  {
+    "time": "20:00",
+    "solar": 0,
+    "consumption": 2500,
+    "battery": 45
+  },
+  {
+    "time": "21:00",
+    "solar": 0,
+    "consumption": 2100,
+    "battery": 25
+  },
+  {
+    "time": "22:00",
+    "solar": 0,
+    "consumption": 1200,
+    "battery": 20
+  },
+  {
+    "time": "23:00",
+    "solar": 0,
+    "consumption": 700,
+    "battery": 20
+  }
+]
+
+
+
+--- C:\Users\kunda\OneDrive\Desktop\data\data\households.json ---
+
+
+[
+  { "id": "HH-001", "pattern": "high_evening", "batteryLevel": 45, "currentConsumption": 25, "energyBalance": -10, "status": "Deficit" },
+  { "id": "HH-002", "pattern": "solar_heavy", "batteryLevel": 90, "currentConsumption": 10, "energyBalance": 15, "status": "Surplus" },
+  { "id": "HH-003", "pattern": "steady", "batteryLevel": 60, "currentConsumption": 18, "energyBalance": -5, "status": "Deficit" },
+  { "id": "HH-004", "pattern": "low_usage", "batteryLevel": 20, "currentConsumption": 8, "energyBalance": 2, "status": "Surplus" },
+  { "id": "HH-005", "pattern": "high_evening", "batteryLevel": 35, "currentConsumption": 30, "energyBalance": -18, "status": "Deficit" },
+  { "id": "HH-006", "pattern": "solar_heavy", "batteryLevel": 100, "currentConsumption": 12, "energyBalance": 22, "status": "Surplus" },
+  { "id": "HH-007", "pattern": "steady", "batteryLevel": 55, "currentConsumption": 15, "energyBalance": 0, "status": "Balanced" },
+  { "id": "HH-008", "pattern": "low_usage", "batteryLevel": 40, "currentConsumption": 7, "energyBalance": 3, "status": "Surplus" },
+  { "id": "HH-009", "pattern": "high_evening", "batteryLevel": 15, "currentConsumption": 28, "energyBalance": -22, "status": "Deficit" },
+  { "id": "HH-010", "pattern": "solar_heavy", "batteryLevel": 85, "currentConsumption": 14, "energyBalance": 12, "status": "Surplus" },
+  { "id": "HH-011", "pattern": "steady", "batteryLevel": 70, "currentConsumption": 17, "energyBalance": -2, "status": "Deficit" },
+  { "id": "HH-012", "pattern": "low_usage", "batteryLevel": 30, "currentConsumption": 9, "energyBalance": 1, "status": "Surplus" },
+  { "id": "HH-013", "pattern": "high_evening", "batteryLevel": 50, "currentConsumption": 35, "energyBalance": -20, "status": "Deficit" },
+  { "id": "HH-014", "pattern": "solar_heavy", "batteryLevel": 95, "currentConsumption": 11, "energyBalance": 18, "status": "Surplus" },
+  { "id": "HH-015", "pattern": "steady", "batteryLevel": 65, "currentConsumption": 16, "energyBalance": -4, "status": "Deficit" },
+  { "id": "HH-016", "pattern": "low_usage", "batteryLevel": 25, "currentConsumption": 6, "energyBalance": 4, "status": "Surplus" },
+  { "id": "HH-017", "pattern": "high_evening", "batteryLevel": 40, "currentConsumption": 32, "energyBalance": -25, "status": "Deficit" },
+  { "id": "HH-018", "pattern": "solar_heavy", "batteryLevel": 88, "currentConsumption": 13, "energyBalance": 14, "status": "Surplus" },
+  { "id": "HH-019", "pattern": "steady", "batteryLevel": 58, "currentConsumption": 19, "energyBalance": -6, "status": "Deficit" },
+  { "id": "HH-020", "pattern": "low_usage", "batteryLevel": 35, "currentConsumption": 8, "energyBalance": 2, "status": "Surplus" },
+  { "id": "HH-021", "pattern": "high_evening", "batteryLevel": 20, "currentConsumption": 27, "energyBalance": -15, "status": "Deficit" },
+  { "id": "HH-022", "pattern": "solar_heavy", "batteryLevel": 92, "currentConsumption": 10, "energyBalance": 19, "status": "Surplus" },
+  { "id": "HH-023", "pattern": "steady", "batteryLevel": 75, "currentConsumption": 16, "energyBalance": 0, "status": "Balanced" },
+  { "id": "HH-024", "pattern": "low_usage", "batteryLevel": 45, "currentConsumption": 5, "energyBalance": 5, "status": "Surplus" },
+  { "id": "HH-025", "pattern": "high_evening", "batteryLevel": 30, "currentConsumption": 33, "energyBalance": -28, "status": "Deficit" },
+  { "id": "HH-026", "pattern": "solar_heavy", "batteryLevel": 98, "currentConsumption": 12, "energyBalance": 21, "status": "Surplus" },
+  { "id": "HH-027", "pattern": "steady", "batteryLevel": 62, "currentConsumption": 18, "energyBalance": -3, "status": "Deficit" },
+  { "id": "HH-028", "pattern": "low_usage", "batteryLevel": 50, "currentConsumption": 7, "energyBalance": 3, "status": "Surplus" },
+  { "id": "HH-029", "pattern": "high_evening", "batteryLevel": 25, "currentConsumption": 29, "energyBalance": -19, "status": "Deficit" },
+  { "id": "HH-030", "pattern": "solar_heavy", "batteryLevel": 80, "currentConsumption": 15, "energyBalance": 10, "status": "Surplus" },
+  { "id": "HH-031", "pattern": "steady", "batteryLevel": 68, "currentConsumption": 17, "energyBalance": -1, "status": "Deficit" },
+  { "id": "HH-032", "pattern": "low_usage", "batteryLevel": 15, "currentConsumption": 9, "energyBalance": 1, "status": "Surplus" },
+  { "id": "HH-033", "pattern": "high_evening", "batteryLevel": 48, "currentConsumption": 34, "energyBalance": -24, "status": "Deficit" },
+  { "id": "HH-034", "pattern": "solar_heavy", "batteryLevel": 96, "currentConsumption": 11, "energyBalance": 17, "status": "Surplus" },
+  { "id": "HH-035", "pattern": "steady", "batteryLevel": 60, "currentConsumption": 16, "energyBalance": -5, "status": "Deficit" },
+  { "id": "HH-036", "pattern": "low_usage", "batteryLevel": 28, "currentConsumption": 6, "energyBalance": 4, "status": "Surplus" },
+  { "id": "HH-037", "pattern": "high_evening", "batteryLevel": 38, "currentConsumption": 31, "energyBalance": -21, "status": "Deficit" },
+  { "id": "HH-038", "pattern": "solar_heavy", "batteryLevel": 89, "currentConsumption": 13, "energyBalance": 13, "status": "Surplus" },
+  { "id": "HH-039", "pattern": "steady", "batteryLevel": 56, "currentConsumption": 19, "energyBalance": -7, "status": "Deficit" },
+  { "id": "HH-040", "pattern": "low_usage", "batteryLevel": 33, "currentConsumption": 8, "energyBalance": 2, "status": "Surplus" },
+  { "id": "HH-041", "pattern": "high_evening", "batteryLevel": 22, "currentConsumption": 26, "energyBalance": -14, "status": "Deficit" },
+  { "id": "HH-042", "pattern": "solar_heavy", "batteryLevel": 93, "currentConsumption": 10, "energyBalance": 20, "status": "Surplus" },
+  { "id": "HH-043", "pattern": "steady", "batteryLevel": 72, "currentConsumption": 15, "energyBalance": 0, "status": "Balanced" },
+  { "id": "HH-044", "pattern": "low_usage", "batteryLevel": 42, "currentConsumption": 5, "energyBalance": 5, "status": "Surplus" },
+  { "id": "HH-045", "pattern": "high_evening", "batteryLevel": 32, "currentConsumption": 35, "energyBalance": -30, "status": "Deficit" },
+  { "id": "HH-046", "pattern": "solar_heavy", "batteryLevel": 99, "currentConsumption": 12, "energyBalance": 23, "status": "Surplus" },
+  { "id": "HH-047", "pattern": "steady", "batteryLevel": 64, "currentConsumption": 18, "energyBalance": -4, "status": "Deficit" },
+  { "id": "HH-048", "pattern": "low_usage", "batteryLevel": 48, "currentConsumption": 7, "energyBalance": 3, "status": "Surplus" },
+  { "id": "HH-049", "pattern": "high_evening", "batteryLevel": 27, "currentConsumption": 29, "energyBalance": -17, "status": "Deficit" },
+  { "id": "HH-050", "pattern": "solar_heavy", "batteryLevel": 84, "currentConsumption": 14, "energyBalance": 11, "status": "Surplus" }
+]
+
+
+
+--- C:\Users\kunda\OneDrive\Desktop\data\data\recommendations.json ---
+
+
+[
+  {
+    "scenarioId": "REC-001",
+    "source": {
+      "batteryName": "Main Facility Storage A",
+      "level": 95
+    },
+    "destination": {
+      "batteryName": "Industrial Park Reserve",
+      "level": 20
+    },
+    "recommendation": {
+      "action": "Transfer",
+      "amountKWh": 15,
+      "reason": "Industrial Park Reserve is running critically low. Main Facility Storage A has a significant surplus."
+    }
+  },
+  {
+    "scenarioId": "REC-002",
+    "source": {
+      "batteryName": "Community Solar Hub",
+      "level": 88
+    },
+    "destination": {
+      "batteryName": "Substation Alpha Backup",
+      "level": 35
+    },
+    "recommendation": {
+      "action": "Transfer",
+      "amountKWh": 10,
+      "reason": "Pre-emptive load balancing before evening peak demand hits the Substation Alpha sector."
+    }
+  },
+  {
+    "scenarioId": "REC-003",
+    "source": {
+      "batteryName": "Main Facility Storage B",
+      "level": 92
+    },
+    "destination": {
+      "batteryName": "Residential Grid Node",
+      "level": 25
+    },
+    "recommendation": {
+      "action": "Transfer",
+      "amountKWh": 12,
+      "reason": "Residential consumption is spiking. Transferring power to stabilize the local residential node."
+    }
+  },
+  {
+    "scenarioId": "REC-004",
+    "source": {
+      "batteryName": "Commercial Sector Battery",
+      "level": 85
+    },
+    "destination": {
+      "batteryName": "Hospital Backup Generator Array",
+      "level": 40
+    },
+    "recommendation": {
+      "action": "Transfer",
+      "amountKWh": 20,
+      "reason": "Prioritizing critical infrastructure. Hospital backup levels are dropping below the safety threshold."
+    }
+  },
+  {
+    "scenarioId": "REC-005",
+    "source": {
+      "batteryName": "Wind Farm Storage",
+      "level": 78
+    },
+    "destination": {
+      "batteryName": "Industrial Park Reserve",
+      "level": 30
+    },
+    "recommendation": {
+      "action": "Transfer",
+      "amountKWh": 8,
+      "reason": "Address localized energy deficit in the industrial sector utilizing overnight wind generation surplus."
+    }
+  }
+]
+
+
+
+--- C:\Users\kunda\OneDrive\Desktop\data\data\weatherData.json ---
+
+
+[
+  {
+    "time": "00:00",
+    "temperature": 18,
+    "condition": "Cloudy"
+  },
+  {
+    "time": "01:00",
+    "temperature": 17,
+    "condition": "Cloudy"
+  },
+  {
+    "time": "02:00",
+    "temperature": 16,
+    "condition": "Cloudy"
+  },
+  {
+    "time": "03:00",
+    "temperature": 16,
+    "condition": "Cloudy"
+  },
+  {
+    "time": "04:00",
+    "temperature": 15,
+    "condition": "Cloudy"
+  },
+  {
+    "time": "05:00",
+    "temperature": 15,
+    "condition": "Cloudy"
+  },
+  {
+    "time": "06:00",
+    "temperature": 15,
+    "condition": "Cloudy"
+  },
+  {
+    "time": "07:00",
+    "temperature": 16,
+    "condition": "Sunny"
+  },
+  {
+    "time": "08:00",
+    "temperature": 18,
+    "condition": "Sunny"
+  },
+  {
+    "time": "09:00",
+    "temperature": 20,
+    "condition": "Sunny"
+  },
+  {
+    "time": "10:00",
+    "temperature": 22,
+    "condition": "Sunny"
+  },
+  {
+    "time": "11:00",
+    "temperature": 24,
+    "condition": "Sunny"
+  },
+  {
+    "time": "12:00",
+    "temperature": 26,
+    "condition": "Sunny"
+  },
+  {
+    "time": "13:00",
+    "temperature": 27,
+    "condition": "Sunny"
+  },
+  {
+    "time": "14:00",
+    "temperature": 28,
+    "condition": "Sunny"
+  },
+  {
+    "time": "15:00",
+    "temperature": 28,
+    "condition": "Sunny"
+  },
+  {
+    "time": "16:00",
+    "temperature": 27,
+    "condition": "Cloudy"
+  },
+  {
+    "time": "17:00",
+    "temperature": 26,
+    "condition": "Cloudy"
+  },
+  {
+    "time": "18:00",
+    "temperature": 24,
+    "condition": "Cloudy"
+  },
+  {
+    "time": "19:00",
+    "temperature": 22,
+    "condition": "Rainy"
+  },
+  {
+    "time": "20:00",
+    "temperature": 21,
+    "condition": "Rainy"
+  },
+  {
+    "time": "21:00",
+    "temperature": 20,
+    "condition": "Rainy"
+  },
+  {
+    "time": "22:00",
+    "temperature": 19,
+    "condition": "Cloudy"
+  },
+  {
+    "time": "23:00",
+    "temperature": 18,
+    "condition": "Cloudy"
+  }
+]
+
