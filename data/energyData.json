@@ -1,0 +1,146 @@
+[
+  {
+    "time": "00:00",
+    "solar": 0,
+    "consumption": 400,
+    "battery": 20
+  },
+  {
+    "time": "01:00",
+    "solar": 0,
+    "consumption": 350,
+    "battery": 20
+  },
+  {
+    "time": "02:00",
+    "solar": 0,
+    "consumption": 320,
+    "battery": 20
+  },
+  {
+    "time": "03:00",
+    "solar": 0,
+    "consumption": 300,
+    "battery": 20
+  },
+  {
+    "time": "04:00",
+    "solar": 0,
+    "consumption": 310,
+    "battery": 20
+  },
+  {
+    "time": "05:00",
+    "solar": 0,
+    "consumption": 450,
+    "battery": 20
+  },
+  {
+    "time": "06:00",
+    "solar": 100,
+    "consumption": 700,
+    "battery": 20
+  },
+  {
+    "time": "07:00",
+    "solar": 400,
+    "consumption": 900,
+    "battery": 20
+  },
+  {
+    "time": "08:00",
+    "solar": 800,
+    "consumption": 850,
+    "battery": 20
+  },
+  {
+    "time": "09:00",
+    "solar": 1200,
+    "consumption": 750,
+    "battery": 30
+  },
+  {
+    "time": "10:00",
+    "solar": 1600,
+    "consumption": 700,
+    "battery": 45
+  },
+  {
+    "time": "11:00",
+    "solar": 2000,
+    "consumption": 680,
+    "battery": 65
+  },
+  {
+    "time": "12:00",
+    "solar": 2300,
+    "consumption": 650,
+    "battery": 85
+  },
+  {
+    "time": "13:00",
+    "solar": 2400,
+    "consumption": 640,
+    "battery": 100
+  },
+  {
+    "time": "14:00",
+    "solar": 2300,
+    "consumption": 650,
+    "battery": 100
+  },
+  {
+    "time": "15:00",
+    "solar": 1800,
+    "consumption": 700,
+    "battery": 100
+  },
+  {
+    "time": "16:00",
+    "solar": 1200,
+    "consumption": 800,
+    "battery": 100
+  },
+  {
+    "time": "17:00",
+    "solar": 600,
+    "consumption": 1000,
+    "battery": 100
+  },
+  {
+    "time": "18:00",
+    "solar": 100,
+    "consumption": 1500,
+    "battery": 90
+  },
+  {
+    "time": "19:00",
+    "solar": 0,
+    "consumption": 2200,
+    "battery": 70
+  },
+  {
+    "time": "20:00",
+    "solar": 0,
+    "consumption": 2500,
+    "battery": 45
+  },
+  {
+    "time": "21:00",
+    "solar": 0,
+    "consumption": 2100,
+    "battery": 25
+  },
+  {
+    "time": "22:00",
+    "solar": 0,
+    "consumption": 1200,
+    "battery": 20
+  },
+  {
+    "time": "23:00",
+    "solar": 0,
+    "consumption": 700,
+    "battery": 20
+  }
+]
