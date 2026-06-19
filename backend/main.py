@@ -81,118 +81,106 @@ def get_live_weather(hour: int = 0):
 
 @app.get("/api/status")
 def get_status(hour: int = 0):
-    print("Requested Hour:", hour)
-    if not simulation_engine:
-        raise HTTPException(status_code=500, detail="Data manager not initialized. Please run dataset generator.")
+    try:
+        print("Requested Hour:", hour)
+        if not simulation_engine:
+            raise HTTPException(status_code=500, detail="Data manager not initialized. Please run dataset generator.")
+            
+        # Wrap index around dataset length
+        total_len = data_manager.get_length()
+        safe_index = hour % total_len
         
-    # Wrap index around dataset length
-    total_len = data_manager.get_length()
-    safe_index = hour % total_len
-    
-    state = simulation_engine.get_state(safe_index)
-    if not state:
-        raise HTTPException(status_code=404, detail="Data record not found")
+        state = simulation_engine.get_state(safe_index)
+        if not state:
+            raise HTTPException(status_code=404, detail="Data record not found")
+            
+        current_row = state["current_state"]
+        balancing = state["balancing"]
+        risks = state["risks"]
+        sustainability = state["sustainability"]
+        forecast = state["forecast"]
         
-    # 1. Run forecast heuristic for next 24 hours
-    forecast = prediction_engine.forecast_24h(safe_index)
-    
-    # 2. Run risk analyzer
-    risks = risk_engine.analyze_risks(current_row, forecast)
-    
-    # 3. Run balancing engine to determine optimal storage/grid actions
-    balancing = balancing_engine.balance_grid(current_row)
-    
-    # 4. Calculate sustainability outcomes
-    sustainability = sustainability_calculator.calculate_metrics(current_row, balancing)
-    
-    # Compute before/after battery level
-    before_level = current_row.get("battery_level", 250.0)
-    action = balancing.get("battery_action", "IDLE")
-    rate = balancing.get("battery_rate", 0.0)
-    
-    if action in ["CHARGE", "GRID_CHARGE"]:
-        after_level = before_level + (rate * 0.92)
-    elif action == "DISCHARGE":
-        after_level = before_level - (rate / 0.92)
-    else:
-        after_level = before_level
+        before_level = state["before"]["battery_level"]
+        after_level = state["after"]["battery_level"]
         
-    after_level = max(0.0, min(500.0, after_level))
-    
-    # Grid Health string
-    criticals = [r for r in risks if r.get("level") == "critical"]
-    warnings = [r for r in risks if r.get("level") == "warning"]
-    if criticals:
-        gridHealth = "Critical"
-    elif warnings:
-        gridHealth = "Warning"
-    else:
-        gridHealth = "Nominal"
+        # Grid Health string
+        criticals = [r for r in risks if r.get("level") == "critical"]
+        warnings = [r for r in risks if r.get("level") == "warning"]
+        if criticals:
+            gridHealth = "Critical"
+        elif warnings:
+            gridHealth = "Warning"
+        else:
+            gridHealth = "Nominal"
 
-    # Generate dynamic decision history
-    decision_history = []
-    for i in range(5):
-        hist_idx = (safe_index - i) % total_len
-        hist_row = data_manager.get_row(hist_idx)
-        hist_bal = balancing_engine.balance_grid(hist_row)
-        decision_history.append({
-            "timestamp": hist_row.get("timestamp", f"Hour {hist_idx}"),
-            "action": hist_bal.get("battery_action", "IDLE"),
-            "rate": hist_bal.get("battery_rate", 0.0),
-            "tariff_zone": hist_bal.get("tariff_zone", "OFF-PEAK"),
-            "status": "Nominal" if hist_bal.get("load_shedding", 0.0) == 0.0 else "Load Shedding"
-        })
+        # Generate dynamic decision history from state
+        decision_history = []
+        for hist in state.get("decision_history", []):
+            decision_history.append({
+                "timestamp": f"Hour {hist['hour']}",
+                "action": hist["action"],
+                "rate": 0.0,
+                "tariff_zone": "OFF-PEAK",
+                "status": "Nominal" if hist["action"] != "LOAD_SHED" else "Load Shedding"
+            })
 
-    # Gemini Advisor Fields
-    has_peak = current_row["hour"] in [18, 19, 20, 21, 22]
-    if action == "DISCHARGE":
-        rec = "Discharge battery to cover demand deficit."
-        reason = "Local demand exceeds solar generation. Drawing from battery avoids grid charges."
-        benefit = f"Saves ${balancing.get('tariff_rate', 0.16) * rate:.2f} in grid fees."
-        conf = 95.0
-    elif action == "CHARGE":
-        rec = "Store excess solar generation in battery storage."
-        reason = "High solar generation surplus. Charging battery max capacity prevents curtailment."
-        benefit = "Ensures clean energy reserves for next peak window."
-        conf = 98.0
-    elif action == "GRID_CHARGE":
-        rec = "Charge battery from utility grid."
-        reason = "Off-peak pricing window is active with low local battery storage levels."
-        benefit = f"Arbitrage savings of ${(0.28 - balancing.get('tariff_rate', 0.08)) * rate:.2f} expected."
-        conf = 92.0
-    else:
-        rec = "Keep battery idle and monitor grid sync."
-        reason = "Microgrid demand is balanced with current local solar output."
-        benefit = "Preserves battery cycle life."
-        conf = 90.0
+        # Gemini Advisor Fields
+        recs = balancing.get("recommendations", [])
+        if recs and len(recs) > 0:
+            primary_rec = recs[0]
+            if isinstance(primary_rec, dict):
+                rec = primary_rec.get("recommendation", "MONITOR")
+                reason = primary_rec.get("reason", "")
+                benefit = primary_rec.get("expectedBenefit", "")
+                conf = primary_rec.get("confidence", "High")
+                source = primary_rec.get("source", "Gemini")
+            else:
+                rec = "MONITOR"
+                reason = str(primary_rec)
+                benefit = "N/A"
+                conf = "High"
+                source = "Heuristic"
+        else:
+            rec = "MONITOR"
+            reason = "No active recommendation."
+            benefit = "N/A"
+            conf = "High"
+            source = "Heuristic"
 
-    # Cost Comparison Chart fields
-    baseline_cost = current_row.get("total_demand", 0.0) * balancing.get("tariff_rate", 0.16)
-    if action == "DISCHARGE":
-        optimized_cost = max(0.0, current_row.get("total_demand", 0.0) - rate) * balancing.get("tariff_rate", 0.16)
-    else:
-        optimized_cost = baseline_cost
+        # Cost Comparison Chart fields
+        baseline_cost = current_row.get("total_demand", 0.0) * balancing.get("tariff_rate", 0.16)
+        if balancing.get("battery_action") == "DISCHARGE":
+            optimized_cost = max(0.0, current_row.get("total_demand", 0.0) - balancing.get("battery_rate", 0.0)) * balancing.get("tariff_rate", 0.16)
+        else:
+            optimized_cost = baseline_cost
 
-    return {
-        "current_state": current_row,
-        "balancing": balancing,
-        "risks": risks,
-        "before": {"battery_level": round(before_level, 2)},
-        "after": {"battery_level": round(after_level, 2)},
-        "gridHealth": gridHealth,
-        "sustainability": sustainability,
-        "decision_history": decision_history,
-        "recommendation": rec,
-        "reason": reason,
-        "expectedBenefit": benefit,
-        "confidence": conf,
-        "source": "Gemini 1.5 Flash Model",
-        "baselineCost": round(baseline_cost, 2),
-        "optimizedCost": round(optimized_cost, 2),
-        "costSaved": round(sustainability.get("cost_savings_usd", 412.8), 2),
-        "co2Reduced": round(sustainability.get("co2_offset_kg", 1428.5), 1),
-        "blackoutsPrevented": 3 if gridHealth == "Nominal" else 1
-    }
+        return {
+            "current_state": current_row,
+            "balancing": balancing,
+            "risks": risks,
+            "before": {"battery_level": round(before_level, 2)},
+            "after": {"battery_level": round(after_level, 2)},
+            "gridHealth": gridHealth,
+            "sustainability": sustainability,
+            "decision_history": decision_history,
+            "recommendation": rec,
+            "reason": reason,
+            "expectedBenefit": benefit,
+            "confidence": conf,
+            "source": source,
+            "baselineCost": round(baseline_cost, 2),
+            "optimizedCost": round(optimized_cost, 2),
+            "costSaved": round(sustainability.get("cost_savings_usd", 0.0), 2),
+            "co2Reduced": round(sustainability.get("co2_offset_kg", 0.0), 1),
+            "blackoutsPrevented": sustainability.get("blackouts_prevented", 0),
+            "forecast": forecast
+        }
+    except Exception as e:
+        import traceback
+        return {
+            "error": str(e),
+            "traceback": traceback.format_exc()
+        }
 
 @app.get("/api/live-weather")
 def get_live_weather():
