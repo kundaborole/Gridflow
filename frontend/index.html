@@ -13,9 +13,14 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
+    <!-- Mobile Hamburger Overlay Button -->
+    <button id="mobile-hamburger-btn" class="mobile-hamburger-btn" title="Open Navigation Menu">
+        <i class="fa-solid fa-bars"></i>
+    </button>
+
     <div class="app-container">
         <!-- Sidebar Navigation -->
-        <aside class="sidebar">
+        <aside class="sidebar" id="sidebar">
             <div class="brand">
                 <i class="fa-solid fa-bolt brand-icon"></i>
                 <div class="brand-text">
@@ -24,191 +29,571 @@
                 </div>
             </div>
             <nav class="nav-menu">
-                <a href="#" class="nav-item active"><i class="fa-solid fa-chart-line"></i> Dashboard</a>
-                <a href="#" class="nav-item"><i class="fa-solid fa-battery-three-quarters"></i> Storage</a>
-                <a href="#" class="nav-item"><i class="fa-solid fa-leaf"></i> Sustainability</a>
-                <a href="#" class="nav-item"><i class="fa-solid fa-gears"></i> Engine Config</a>
+                <a href="#" class="nav-item active" data-view="dashboard"><i class="fa-solid fa-chart-line"></i> <span class="nav-label">Dashboard</span></a>
+                <a href="#" class="nav-item" data-view="storage"><i class="fa-solid fa-battery-three-quarters"></i> <span class="nav-label">Storage</span></a>
+                <a href="#" class="nav-item" data-view="sustainability"><i class="fa-solid fa-leaf"></i> <span class="nav-label">Sustainability</span></a>
+                <a href="#" class="nav-item" data-view="engine-config"><i class="fa-solid fa-gears"></i> <span class="nav-label">Engine Config</span></a>
             </nav>
             <div class="sidebar-footer">
                 <div class="connection-status">
-                    <span class="status-dot green"></span>
-                    <span>API Connected</span>
+                    <span class="status-dot green" id="sidebar-api-dot"></span>
+                    <span class="nav-label" id="sidebar-api-text">API Connected</span>
                 </div>
             </div>
         </aside>
 
-        <!-- Main Workspace -->
-        <main class="main-content">
-            <!-- Top Navigation / Header -->
-            <header class="header">
-                <div class="header-title">
-                    <h2>Microgrid Command Center</h2>
-                    <p>Real-time telemetry, predictive analytics & AI balancing recommendations</p>
+        <!-- Right Side Workspace Container -->
+        <div class="workspace-container">
+            <!-- Sticky Top Navbar -->
+            <header class="top-navbar">
+                <div class="navbar-left">
+                    <button id="hamburger-btn" class="hamburger-btn" title="Toggle Sidebar">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                    <div class="navbar-brand">
+                        <i class="fa-solid fa-bolt brand-icon"></i>
+                        <h2>GridFlow AI</h2>
+                    </div>
                 </div>
                 
-                <!-- Time Machine Simulation Controller -->
-                <div class="time-controller card">
-                    <div class="time-controls">
-                        <button id="btn-prev" class="control-btn" title="Previous Hour"><i class="fa-solid fa-backward-step"></i></button>
-                        <button id="btn-play" class="control-btn play-btn" title="Simulate Live Flow"><i class="fa-solid fa-play"></i></button>
-                        <button id="btn-next" class="control-btn" title="Next Hour"><i class="fa-solid fa-forward-step"></i></button>
-                    </div>
-                    <div class="time-display">
-                        <div class="time-label">SIMULATED TIME</div>
-                        <div id="display-timestamp" class="time-value">2026-01-01 00:00:00</div>
-                    </div>
-                    <div class="slider-container">
-                        <input type="range" id="time-slider" min="0" max="8759" value="132" class="range-slider">
-                        <span id="slider-percentage" class="slider-tooltip">Hour 132/8759</span>
-                    </div>
+                <nav class="navbar-links">
+                    <a href="#" class="nav-link active" data-view="dashboard">Dashboard</a>
+                    <a href="#" class="nav-link" data-view="storage">Storage</a>
+                    <a href="#" class="nav-link" data-view="sustainability">Sustainability</a>
+                    <a href="#" class="nav-link" data-view="engine-config">Engine Config</a>
+                </nav>
+                
+                <div class="navbar-status">
+                    <span id="indicator-api" class="status-indicator online"><span class="dot"></span> API Connected</span>
+                    <span id="indicator-gemini" class="status-indicator online"><i class="fa-solid fa-robot"></i> Gemini Active</span>
+                    <span id="indicator-weather" class="status-indicator online"><i class="fa-solid fa-cloud"></i> Weather Live</span>
                 </div>
             </header>
 
-            <!-- Metrics grid (KPI Cards) -->
-            <section class="metrics-grid">
-                <!-- Solar Generation Card -->
-                <div class="metric-card card glow-blue">
-                    <div class="card-icon blue"><i class="fa-solid fa-sun"></i></div>
-                    <div class="card-data">
-                        <h3>Solar Generation</h3>
-                        <div class="value-row">
-                            <span id="val-solar" class="metric-value">0.00</span>
-                            <span class="metric-unit">kW</span>
+            <!-- Main Scrollable Content -->
+            <main class="main-content">
+                <!-- VIEW 1: Dashboard (Hero View) -->
+                <section class="view-section active" id="view-dashboard">
+                    <!-- Top Navigation / Header -->
+                    <header class="header">
+                        <div class="header-title">
+                            <h2>Microgrid Command Center</h2>
+                            <p>Real-time telemetry, predictive analytics & AI balancing recommendations</p>
                         </div>
-                        <div class="metric-footer">
-                            <i class="fa-solid fa-cloud-sun"></i> Cloud Cover: <span id="val-clouds">0.0%</span>
+                        
+                        <!-- Time Machine Simulation Controller -->
+                        <div class="time-controller card">
+                            <div class="time-controls">
+                                <button id="btn-prev" class="control-btn" title="Previous Hour"><i class="fa-solid fa-backward-step"></i></button>
+                                <button id="btn-play" class="control-btn play-btn" title="Simulate Live Flow"><i class="fa-solid fa-play"></i></button>
+                                <button id="btn-next" class="control-btn" title="Next Hour"><i class="fa-solid fa-forward-step"></i></button>
+                                <button id="btn-run-demo" class="control-btn demo-btn">🚀 Run Demo Scenario</button>
+                            </div>
+                            <div class="time-display">
+                                <div class="time-label">SIMULATED TIME</div>
+                                <div id="display-timestamp" class="time-value">2026-01-01 00:00:00</div>
+                            </div>
+                            <div class="slider-container">
+                                <input type="range" id="time-slider" min="0" max="8759" value="132" class="range-slider">
+                                <span id="slider-percentage" class="slider-tooltip">Hour 132/8759</span>
+                            </div>
                         </div>
-                    </div>
-                </div>
+                    </header>
 
-                <!-- Total Demand Card -->
-                <div class="metric-card card glow-purple">
-                    <div class="card-icon purple"><i class="fa-solid fa-house-laptop"></i></div>
-                    <div class="card-data">
-                        <h3>Microgrid Demand</h3>
-                        <div class="value-row">
-                            <span id="val-demand" class="metric-value">0.00</span>
-                            <span class="metric-unit">kW</span>
-                        </div>
-                        <div class="metric-footer">
-                            <i class="fa-solid fa-thermometer"></i> Temperature: <span id="val-temp">0.0°C</span>
-                        </div>
+                    <!-- Dynamic Status Banner -->
+                    <div id="grid-status-banner" class="status-banner stable">
+                        <h2><i id="grid-status-icon" class="fa-solid fa-circle-check"></i> <span id="grid-status-text">Grid Stable</span></h2>
                     </div>
-                </div>
 
-                <!-- Battery SoC Card -->
-                <div class="metric-card card glow-green">
-                    <div class="card-icon green"><i class="fa-solid fa-car-battery"></i></div>
-                    <div class="card-data">
-                        <h3>Battery Storage</h3>
-                        <div class="value-row">
-                            <span id="val-battery" class="metric-value">0.00</span>
-                            <span class="metric-unit">kWh</span>
+                    <!-- Metrics grid (KPI Cards) -->
+                    <section class="metrics-grid">
+                        <!-- Solar Generation Card -->
+                        <div class="metric-card card glow-blue">
+                            <div class="card-icon blue"><i class="fa-solid fa-sun"></i></div>
+                            <div class="card-data">
+                                <h3>Solar Generation</h3>
+                                <div class="value-row">
+                                    <span id="val-solar" class="metric-value">0.00</span>
+                                    <span class="metric-unit">kW</span>
+                                </div>
+                                <div class="metric-footer">
+                                    <i class="fa-solid fa-cloud-sun"></i> Cloud Cover: <span id="val-clouds">0.0%</span>
+                                </div>
+                            </div>
                         </div>
-                        <div class="battery-bar-container">
-                            <div id="battery-fill" class="battery-bar-fill" style="width: 50%;"></div>
+
+                        <!-- Total Demand Card -->
+                        <div class="metric-card card glow-purple">
+                            <div class="card-icon purple"><i class="fa-solid fa-house-laptop"></i></div>
+                            <div class="card-data">
+                                <h3>Microgrid Demand</h3>
+                                <div class="value-row">
+                                    <span id="val-demand" class="metric-value">0.00</span>
+                                    <span class="metric-unit">kW</span>
+                                </div>
+                                <div class="metric-footer">
+                                    <i class="fa-solid fa-thermometer"></i> Temperature: <span id="val-temp">0.0°C</span>
+                                </div>
+                            </div>
                         </div>
-                        <div class="metric-footer">
-                            SoC: <span id="val-battery-pct">50.0%</span> | Status: <span id="val-battery-action" class="status-badge green">IDLE</span>
+
+                        <!-- Battery SoC Card -->
+                        <div class="metric-card card glow-green">
+                            <div class="card-icon green"><i class="fa-solid fa-car-battery"></i></div>
+                            <div class="card-data">
+                                <h3>Battery Storage</h3>
+                                <div class="value-row">
+                                    <span id="val-battery" class="metric-value">0.00</span>
+                                    <span class="metric-unit">kWh</span>
+                                </div>
+                                <div class="battery-bar-container">
+                                    <div id="battery-fill" class="battery-bar-fill" style="width: 50%;"></div>
+                                </div>
+                                <div class="metric-footer">
+                                    SoC: <span id="val-battery-pct">50.0%</span> | Status: <span id="val-battery-action" class="status-badge green">IDLE</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Grid Net Balance Card -->
+                        <div class="metric-card card glow-orange">
+                            <div class="card-icon orange"><i class="fa-solid fa-tower-broadcast"></i></div>
+                            <div class="card-data">
+                                <h3>Grid Net Exchange</h3>
+                                <div class="value-row">
+                                    <span id="val-grid" class="metric-value">0.00</span>
+                                    <span class="metric-unit">kW</span>
+                                </div>
+                                <div class="metric-footer">
+                                    Zone: <span id="val-tariff-zone" class="badge">OFF-PEAK</span> | Rate: <span id="val-tariff-rate">$0.08</span>/kWh
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Before/After and Impact Row -->
+                    <section class="metrics-grid impact-grid">
+                        <!-- Before vs After Impact Card -->
+                        <div class="metric-card card glow-ai before-after-card">
+                            <div class="card-header-compact">
+                                <h3><i class="fa-solid fa-bolt-lightning"></i> AI Battery Impact</h3>
+                            </div>
+                            <div class="ba-container">
+                                <div class="ba-col">
+                                    <span class="ba-label">Before AI</span>
+                                    <span id="val-battery-before" class="ba-value before">0.0%</span>
+                                </div>
+                                <div class="ba-divider"><i class="fa-solid fa-arrow-right"></i></div>
+                                <div class="ba-col">
+                                    <span class="ba-label">After AI</span>
+                                    <span id="val-battery-after" class="ba-value after">0.0%</span>
+                                </div>
+                            </div>
+                            <div class="ba-improvement">
+                                Improvement: <span id="val-battery-diff">+0.0%</span>
+                            </div>
+                        </div>
+
+                        <!-- Savings Summary Card -->
+                        <div class="impact-metrics-container">
+                            <div class="impact-title">GridFlow Business Impact</div>
+                            <div class="impact-metrics">
+                                <div class="impact-box">
+                                    <div class="impact-val green" id="val-blackouts">0</div>
+                                    <div class="impact-lbl">Blackouts Prevented</div>
+                                </div>
+                                <div class="impact-box">
+                                    <div class="impact-val blue" id="val-co2">0.0</div>
+                                    <div class="impact-lbl">kg CO₂ Reduced</div>
+                                </div>
+                                <div class="impact-box">
+                                    <div class="impact-val orange" id="val-savings">₹0</div>
+                                    <div class="impact-lbl">Total Savings</div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Visualization & Analysis Panel -->
+                    <section class="dashboard-grid">
+                        <!-- Live Weather Intelligence Card -->
+                        <div class="chart-container card side-chart" style="flex: 0.5;">
+                            <div class="card-header">
+                                <h3><i class="fa-solid fa-cloud-sun-rain"></i> Live Weather Intelligence</h3>
+                                <span class="badge blue live-weather-badge"><i class="fa-solid fa-satellite-dish"></i> Live Weather Data</span>
+                            </div>
+                            <div class="weather-content" style="padding: 20px; display: flex; flex-direction: column; gap: 16px;">
+                                <div class="weather-row" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 12px;">
+                                    <span style="color: #9ca3af;"><i class="fa-solid fa-location-dot"></i> Location</span>
+                                    <strong id="live-location" style="color: #fff; font-size: 1.1rem;">Loading...</strong>
+                                </div>
+                                <div class="weather-row" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 12px;">
+                                    <span style="color: #9ca3af;"><i class="fa-solid fa-temperature-half"></i> Temperature</span>
+                                    <strong id="live-temp" style="color: #00d9ff; font-size: 1.4rem;">-- °C</strong>
+                                </div>
+                                <div class="weather-row" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 12px;">
+                                    <span style="color: #9ca3af;"><i class="fa-solid fa-cloud"></i> Cloud Cover</span>
+                                    <strong id="live-clouds" style="color: #fff; font-size: 1.1rem;">-- %</strong>
+                                </div>
+                                <div class="weather-row" style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="color: #9ca3af;"><i class="fa-solid fa-bolt"></i> Conditions</span>
+                                    <strong id="live-conditions" style="color: #c084fc; font-size: 1.1rem;">--</strong>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Forecast Chart -->
+                        <div class="chart-container card" style="flex: 1.5;">
+                            <div class="card-header">
+                                <h3><i class="fa-solid fa-chart-area"></i> 24-Hour Predictive Forecast</h3>
+                                <span class="badge blue">HEURISTIC ENGINE</span>
+                            </div>
+                            <div class="chart-wrapper">
+                                <canvas id="forecastChart"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Cost Savings Visualization -->
+                        <div class="chart-container card side-chart">
+                            <div class="card-header">
+                                <h3><i class="fa-solid fa-money-bill-trend-up"></i> Cost Savings (Cumulative)</h3>
+                            </div>
+                            <div class="chart-wrapper">
+                                <canvas id="costChart"></canvas>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- AI Engine Outputs -->
+                    <section class="dashboard-grid bottom-row">
+                        <!-- Gemini AI Advisor Hero Card -->
+                        <div class="gemini-card card glow-gemini">
+                            <div class="card-header">
+                                <h3>🤖 Gemini AI Energy Advisor</h3>
+                                <div style="display: flex; gap: 8px;">
+                                    <span id="gemini-confidence" class="badge premium">Confidence: High</span>
+                                    <span id="gemini-source" class="badge blue">Source: Gemini</span>
+                                </div>
+                            </div>
+                            <div class="gemini-content">
+                                <div class="gemini-action">
+                                    <span class="g-label">Recommendation:</span>
+                                    <h2 id="gemini-rec-action" class="g-action-text">Initializing AI...</h2>
+                                </div>
+                                <div class="gemini-reason">
+                                    <span class="g-label">Reason:</span>
+                                    <p id="gemini-rec-reason">Connecting to neural core.</p>
+                                </div>
+                                <div class="gemini-benefit">
+                                    <span class="g-label">Expected Benefit:</span>
+                                    <p id="gemini-rec-benefit">System online shortly.</p>
+                                </div>
+                                <div class="gemini-weather-insight" style="margin-top: 12px; padding: 12px; background: rgba(0, 217, 255, 0.05); border-left: 3px solid #00d9ff; border-radius: 4px;">
+                                    <p id="gemini-weather-text" style="margin: 0; color: #00d9ff; font-size: 0.95rem;">
+                                        <i class="fa-solid fa-satellite"></i> GridFlow can ingest live weather signals to improve future forecasting.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- AI Decision Timeline -->
+                        <div class="insights-container card glow-blue">
+                            <div class="card-header">
+                                <h3><i class="fa-solid fa-clock-rotate-left"></i> AI Decision Timeline</h3>
+                            </div>
+                            <ul id="timeline-list" class="timeline-list">
+                                <li><i class="fa-solid fa-circle-notch fa-spin"></i> Loading decisions...</li>
+                            </ul>
+                        </div>
+                    </section>
+                </section>
+
+                <!-- VIEW 2: Storage Intelligence View -->
+                <section class="view-section" id="view-storage" style="display: none;">
+                    <header class="header">
+                        <div class="header-title">
+                            <h2>Storage Intelligence</h2>
+                            <p>Battery State of Charge, Health, charging rates, and historical analytics</p>
+                        </div>
+                    </section>
+                    
+                    <section class="metrics-grid">
+                        <div class="metric-card card glow-green">
+                            <div class="card-icon green"><i class="fa-solid fa-car-battery"></i></div>
+                            <div class="card-data">
+                                <h3>Battery State of Charge</h3>
+                                <div class="value-row">
+                                    <span id="storage-val-battery" class="metric-value">0.00</span>
+                                    <span class="metric-unit">kWh</span>
+                                </div>
+                                <div class="battery-bar-container">
+                                    <div id="storage-battery-fill" class="battery-bar-fill" style="width: 50%;"></div>
+                                </div>
+                                <div class="metric-footer">
+                                    SoC: <span id="storage-val-battery-pct">50.0%</span> | Status: <span id="storage-val-battery-action" class="status-badge green">IDLE</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="metric-card card glow-blue">
+                            <div class="card-icon blue"><i class="fa-solid fa-heart-pulse"></i></div>
+                            <div class="card-data">
+                                <h3>Battery Health (SoH)</h3>
+                                <div class="value-row">
+                                    <span class="metric-value">98.4</span>
+                                    <span class="metric-unit">%</span>
+                                </div>
+                                <div class="metric-footer">
+                                    Status: <span class="status-badge green">EXCELLENT</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="metric-card card glow-purple">
+                            <div class="card-icon purple"><i class="fa-solid fa-bolt-lightning"></i></div>
+                            <div class="card-data">
+                                <h3>Charging / Discharging Rate</h3>
+                                <div class="value-row">
+                                    <span id="storage-val-rate" class="metric-value">0.00</span>
+                                    <span class="metric-unit">kW</span>
+                                </div>
+                                <div class="metric-footer">
+                                    Max Capacity: 500.0 kW
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="metric-card card glow-orange">
+                            <div class="card-icon orange"><i class="fa-solid fa-box-archive"></i></div>
+                            <div class="card-data">
+                                <h3>Storage Capacity</h3>
+                                <div class="value-row">
+                                    <span class="metric-value">500.0</span>
+                                    <span class="metric-unit">kWh</span>
+                                </div>
+                                <div class="metric-footer">
+                                    Technology: Lithium-Ion LFP
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                    
+                    <section class="metrics-grid impact-grid">
+                        <!-- Reused Battery Impact Card -->
+                        <div class="metric-card card glow-ai before-after-card">
+                            <div class="card-header-compact">
+                                <h3><i class="fa-solid fa-bolt-lightning"></i> AI Battery Impact</h3>
+                            </div>
+                            <div class="ba-container">
+                                <div class="ba-col">
+                                    <span class="ba-label">Before AI</span>
+                                    <span id="storage-val-battery-before" class="ba-value before">0.0%</span>
+                                </div>
+                                <div class="ba-divider"><i class="fa-solid fa-arrow-right"></i></div>
+                                <div class="ba-col">
+                                    <span class="ba-label">After AI</span>
+                                    <span id="storage-val-battery-after" class="ba-value after">0.0%</span>
+                                </div>
+                            </div>
+                            <div class="ba-improvement">
+                                Improvement: <span id="storage-val-battery-diff">+0.0%</span>
+                            </div>
+                        </div>
+                        
+                        <div class="chart-container card" style="flex: 2;">
+                            <div class="card-header">
+                                <h3><i class="fa-solid fa-chart-line"></i> Battery SoC 24-Hour Trend</h3>
+                            </div>
+                            <div class="chart-wrapper">
+                                <canvas id="batteryTrendChart"></canvas>
+                            </div>
+                        </div>
+                    </section>
+                </section>
+
+                <!-- VIEW 3: Sustainability View -->
+                <section class="view-section" id="view-sustainability" style="display: none;">
+                    <header class="header">
+                        <div class="header-title">
+                            <h2>Sustainability & ESG Intelligence</h2>
+                            <p>Environmental metrics, Carbon reduction statistics, and Self-Sufficiency analytics</p>
+                        </div>
+                    </section>
+                    
+                    <section class="metrics-grid">
+                        <div class="metric-card card glow-green">
+                            <div class="card-icon green"><i class="fa-solid fa-leaf"></i></div>
+                            <div class="card-data">
+                                <h3>CO₂ Reduced</h3>
+                                <div class="value-row">
+                                    <span id="sust-val-co2" class="metric-value">0.0</span>
+                                    <span class="metric-unit">kg</span>
+                                </div>
+                                <div class="metric-footer">
+                                    Cumulative Offset
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="metric-card card glow-blue">
+                            <div class="card-icon blue"><i class="fa-solid fa-shield-halved"></i></div>
+                            <div class="card-data">
+                                <h3>Blackouts Prevented</h3>
+                                <div class="value-row">
+                                    <span id="sust-val-blackouts" class="metric-value">0</span>
+                                    <span class="metric-unit">Events</span>
+                                </div>
+                                <div class="metric-footer">
+                                    Grid Reliability Metric
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="metric-card card glow-orange">
+                            <div class="card-icon orange"><i class="fa-solid fa-indian-rupee-sign"></i></div>
+                            <div class="card-data">
+                                <h3>Total Savings</h3>
+                                <div class="value-row">
+                                    <span id="sust-val-savings" class="metric-value">₹0</span>
+                                </div>
+                                <div class="metric-footer">
+                                    Realized Economical Value
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="metric-card card glow-purple">
+                            <div class="card-icon purple"><i class="fa-solid fa-sun-plant-wilt"></i></div>
+                            <div class="card-data">
+                                <h3>Self-Sufficiency Ratio</h3>
+                                <div class="value-row">
+                                    <span id="sust-val-ssr" class="metric-value">100.0</span>
+                                    <span class="metric-unit">%</span>
+                                </div>
+                                <div class="metric-footer">
+                                    Renewable fraction utilized
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="metrics-grid impact-grid">
+                        <div class="impact-metrics-container" style="grid-column: span 1;">
+                            <div class="impact-title">ESG Impact Summary</div>
+                            <div style="display: flex; flex-direction: column; gap: 12px; height: 100%; justify-content: center;">
+                                <div class="impact-box" style="margin: 0; padding: 10px;">
+                                    <div class="impact-val green">A+</div>
+                                    <div class="impact-lbl">Microgrid ESG Rating</div>
+                                </div>
+                                <div class="impact-box" style="margin: 0; padding: 10px;">
+                                    <div class="impact-val blue">100%</div>
+                                    <div class="impact-lbl">Local Power Reliability</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="chart-container card" style="grid-column: span 2;">
+                            <div class="card-header">
+                                <h3><i class="fa-solid fa-chart-bar"></i> ESG Economic Optimization (Cumulative Cost)</h3>
+                            </div>
+                            <div class="chart-wrapper">
+                                <canvas id="sustainabilityCostChart"></canvas>
+                            </div>
+                        </div>
+                    </section>
+                </section>
+
+                <!-- VIEW 4: Engine Config View -->
+                <section class="view-section" id="view-engine-config" style="display: none;">
+                    <header class="header">
+                        <div class="header-title">
+                            <h2>Engine Monitoring & Diagnostics</h2>
+                            <p>Real-time status overview of GridFlow AI core intelligence microservices</p>
+                        </div>
+                    </section>
+
+                    <div class="metrics-grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
+                        <!-- Card for each engine -->
+                        <div class="metric-card card glow-blue">
+                            <div class="card-icon blue"><i class="fa-solid fa-brain"></i></div>
+                            <div class="card-data">
+                                <h3>Prediction Engine</h3>
+                                <div style="margin-top: 10px; display: flex; align-items: center; justify-content: space-between;">
+                                    <span class="status-badge green" id="status-engine-prediction">🟢 ONLINE</span>
+                                    <span style="font-size: 0.8rem; color: #9ca3af;">LSTM Predictive Model</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="metric-card card glow-red">
+                            <div class="card-icon red"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                            <div class="card-data">
+                                <h3>Risk Analysis Engine</h3>
+                                <div style="margin-top: 10px; display: flex; align-items: center; justify-content: space-between;">
+                                    <span class="status-badge green" id="status-engine-risk">🟢 ONLINE</span>
+                                    <span style="font-size: 0.8rem; color: #9ca3af;">Dynamic Severity Modeler</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="metric-card card glow-green">
+                            <div class="card-icon green"><i class="fa-solid fa-scale-balanced"></i></div>
+                            <div class="card-data">
+                                <h3>Balancing Optimizer</h3>
+                                <div style="margin-top: 10px; display: flex; align-items: center; justify-content: space-between;">
+                                    <span class="status-badge green" id="status-engine-balancing">🟢 ONLINE</span>
+                                    <span style="font-size: 0.8rem; color: #9ca3af;">Deterministic Flow Solver</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="metric-card card glow-purple">
+                            <div class="card-icon purple"><i class="fa-solid fa-server"></i></div>
+                            <div class="card-data">
+                                <h3>Simulation Engine</h3>
+                                <div style="margin-top: 10px; display: flex; align-items: center; justify-content: space-between;">
+                                    <span class="status-badge green" id="status-engine-simulation">🟢 ONLINE</span>
+                                    <span style="font-size: 0.8rem; color: #9ca3af;">Stateful Loop Executor</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="metric-card card glow-purple">
+                            <div class="card-icon purple"><i class="fa-solid fa-robot"></i></div>
+                            <div class="card-data">
+                                <h3>Gemini AI Advisor</h3>
+                                <div style="margin-top: 10px; display: flex; align-items: center; justify-content: space-between;">
+                                    <span class="status-badge green" id="status-engine-gemini">🟢 ONLINE</span>
+                                    <span style="font-size: 0.8rem; color: #9ca3af;">Gemini 1.5 Flash</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="metric-card card glow-blue">
+                            <div class="card-icon blue"><i class="fa-solid fa-cloud-sun-rain"></i></div>
+                            <div class="card-data">
+                                <h3>Weather Intelligence</h3>
+                                <div style="margin-top: 10px; display: flex; align-items: center; justify-content: space-between;">
+                                    <span class="status-badge green" id="status-engine-weather">🟢 ONLINE</span>
+                                    <span style="font-size: 0.8rem; color: #9ca3af;">OpenWeatherMap API</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="metric-card card glow-orange">
+                            <div class="card-icon orange"><i class="fa-solid fa-network-wired"></i></div>
+                            <div class="card-data">
+                                <h3>API Gateway Connection</h3>
+                                <div style="margin-top: 10px; display: flex; align-items: center; justify-content: space-between;">
+                                    <span class="status-badge green" id="status-engine-api">🟢 ONLINE</span>
+                                    <span style="font-size: 0.8rem; color: #9ca3af;">FastAPI Local Core</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
-
-                <!-- Grid Net Balance Card -->
-                <div class="metric-card card glow-orange">
-                    <div class="card-icon orange"><i class="fa-solid fa-tower-broadcast"></i></div>
-                    <div class="card-data">
-                        <h3>Grid Net Exchange</h3>
-                        <div class="value-row">
-                            <span id="val-grid" class="metric-value">0.00</span>
-                            <span class="metric-unit">kW</span>
-                        </div>
-                        <div class="metric-footer">
-                            Zone: <span id="val-tariff-zone" class="badge">OFF-PEAK</span> | Rate: <span id="val-tariff-rate">$0.08</span>/kWh
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Secondary Metrics (Sustainability & Economic KPI Cards) -->
-            <section class="metrics-grid sub-metrics">
-                <div class="metric-card card clean">
-                    <div class="card-title-sm">CO₂ EMISSIONS OFFSET</div>
-                    <div class="value-row-sm">
-                        <span id="val-co2" class="metric-value-sm">0.0</span>
-                        <span class="metric-unit-sm">kg CO₂</span>
-                    </div>
-                </div>
-                <div class="metric-card card clean">
-                    <div class="card-title-sm">FINANCIAL COST SAVINGS</div>
-                    <div class="value-row-sm">
-                        <span id="val-savings" class="metric-value-sm">$0.00</span>
-                        <span class="metric-unit-sm">Saved</span>
-                    </div>
-                </div>
-                <div class="metric-card card clean">
-                    <div class="card-title-sm">SELF-SUFFICIENCY RATIO</div>
-                    <div class="value-row-sm">
-                        <span id="val-sufficiency" class="metric-value-sm">0.0%</span>
-                        <span class="metric-unit-sm">Local Power</span>
-                    </div>
-                </div>
-                <div class="metric-card card clean">
-                    <div class="card-title-sm">LOAD SHEDDING INSTRUCTION</div>
-                    <div class="value-row-sm">
-                        <span id="val-shedding" class="metric-value-sm">0.00</span>
-                        <span class="metric-unit-sm">kW Cut</span>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Analysis and Visualization Panel -->
-            <section class="dashboard-grid">
-                <!-- Forecast Chart -->
-                <div class="chart-container card">
-                    <div class="card-header">
-                        <h3><i class="fa-solid fa-chart-area"></i> 24-Hour Predictive Forecast</h3>
-                        <span class="badge blue">HEURISTIC ENGINE</span>
-                    </div>
-                    <div class="chart-wrapper">
-                        <canvas id="forecastChart"></canvas>
-                    </div>
-                </div>
-
-                <!-- Load Breakdown Chart -->
-                <div class="chart-container card side-chart">
-                    <div class="card-header">
-                        <h3><i class="fa-solid fa-chart-pie"></i> Local Demand Share</h3>
-                    </div>
-                    <div class="chart-wrapper">
-                        <canvas id="demandBreakdownChart"></canvas>
-                    </div>
-                </div>
-            </section>
-
-            <!-- AI Engine Outputs (Recommendations & Warnings) -->
-            <section class="dashboard-grid bottom-row">
-                <!-- Recommendations panel -->
-                <div class="insights-container card glow-green">
-                    <div class="card-header">
-                        <h3><i class="fa-solid fa-microchip-ai"></i> GridFlow AI Recommendations</h3>
-                    </div>
-                    <ul id="recommendations-list" class="recommendations-list">
-                        <li><i class="fa-solid fa-chevron-right"></i> Initializing recommendation engines...</li>
-                    </ul>
-                </div>
-
-                <!-- Warnings panel -->
-                <div class="insights-container card glow-red">
-                    <div class="card-header">
-                        <h3><i class="fa-solid fa-triangle-exclamation"></i> Risk Assessment Log</h3>
-                    </div>
-                    <ul id="risks-list" class="risks-list">
-                        <li><i class="fa-solid fa-circle-check"></i> System scans active. No risks detected yet.</li>
-                    </ul>
-                </div>
-            </section>
-        </main>
+                </section>
+            </main>
+        </div>
     </div>
     <script src="dashboard.js"></script>
 </body>

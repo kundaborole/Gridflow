@@ -5,6 +5,8 @@ from engines.prediction_engine import PredictionEngine
 from engines.risk_engine import RiskEngine
 from engines.balancing_engine import BalancingEngine
 from engines.sustainability import SustainabilityCalculator
+from engines.simulation_engine import SimulationEngine
+from engines.weather_service import WeatherService
 
 app = FastAPI(title="GridFlow AI Backend API", version="1.0.0")
 
@@ -29,6 +31,15 @@ prediction_engine = PredictionEngine(data_manager) if data_manager else None
 risk_engine = RiskEngine()
 balancing_engine = BalancingEngine()
 sustainability_calculator = SustainabilityCalculator()
+weather_service = WeatherService()
+
+simulation_engine = SimulationEngine(
+    data_manager=data_manager,
+    balancing_engine=balancing_engine,
+    risk_engine=risk_engine,
+    prediction_engine=prediction_engine,
+    sustainability_calculator=sustainability_calculator
+) if data_manager else None
 
 @app.get("/api/config")
 def get_config():
@@ -71,15 +82,15 @@ def get_live_weather(hour: int = 0):
 @app.get("/api/status")
 def get_status(hour: int = 0):
     print("Requested Hour:", hour)
-    if not data_manager:
+    if not simulation_engine:
         raise HTTPException(status_code=500, detail="Data manager not initialized. Please run dataset generator.")
         
     # Wrap index around dataset length
     total_len = data_manager.get_length()
     safe_index = hour % total_len
     
-    current_row = data_manager.get_row(safe_index)
-    if not current_row:
+    state = simulation_engine.get_state(safe_index)
+    if not state:
         raise HTTPException(status_code=404, detail="Data record not found")
         
     # 1. Run forecast heuristic for next 24 hours
@@ -182,3 +193,7 @@ def get_status(hour: int = 0):
         "co2Reduced": round(sustainability.get("co2_offset_kg", 1428.5), 1),
         "blackoutsPrevented": 3 if gridHealth == "Nominal" else 1
     }
+
+@app.get("/api/live-weather")
+def get_live_weather():
+    return weather_service.get_live_weather()
