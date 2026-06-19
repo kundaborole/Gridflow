@@ -1,0 +1,32 @@
+[
+  {
+    "batteryId": "BATT-001",
+    "batteryName": "Main Facility Storage A",
+    "level": 85,
+    "status": "Charging"
+  },
+  {
+    "batteryId": "BATT-002",
+    "batteryName": "Main Facility Storage B",
+    "level": 92,
+    "status": "Stable"
+  },
+  {
+    "batteryId": "BATT-003",
+    "batteryName": "Substation Alpha Backup",
+    "level": 45,
+    "status": "Discharging"
+  },
+  {
+    "batteryId": "BATT-004",
+    "batteryName": "Community Solar Hub",
+    "level": 60,
+    "status": "Charging"
+  },
+  {
+    "batteryId": "BATT-005",
+    "batteryName": "Industrial Park Reserve",
+    "level": 22,
+    "status": "Discharging"
+  }
+]

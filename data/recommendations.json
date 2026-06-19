@@ -1,0 +1,82 @@
+[
+  {
+    "scenarioId": "REC-001",
+    "source": {
+      "batteryName": "Main Facility Storage A",
+      "level": 95
+    },
+    "destination": {
+      "batteryName": "Industrial Park Reserve",
+      "level": 20
+    },
+    "recommendation": {
+      "action": "Transfer",
+      "amountKWh": 15,
+      "reason": "Industrial Park Reserve is running critically low. Main Facility Storage A has a significant surplus."
+    }
+  },
+  {
+    "scenarioId": "REC-002",
+    "source": {
+      "batteryName": "Community Solar Hub",
+      "level": 88
+    },
+    "destination": {
+      "batteryName": "Substation Alpha Backup",
+      "level": 35
+    },
+    "recommendation": {
+      "action": "Transfer",
+      "amountKWh": 10,
+      "reason": "Pre-emptive load balancing before evening peak demand hits the Substation Alpha sector."
+    }
+  },
+  {
+    "scenarioId": "REC-003",
+    "source": {
+      "batteryName": "Main Facility Storage B",
+      "level": 92
+    },
+    "destination": {
+      "batteryName": "Residential Grid Node",
+      "level": 25
+    },
+    "recommendation": {
+      "action": "Transfer",
+      "amountKWh": 12,
+      "reason": "Residential consumption is spiking. Transferring power to stabilize the local residential node."
+    }
+  },
+  {
+    "scenarioId": "REC-004",
+    "source": {
+      "batteryName": "Commercial Sector Battery",
+      "level": 85
+    },
+    "destination": {
+      "batteryName": "Hospital Backup Generator Array",
+      "level": 40
+    },
+    "recommendation": {
+      "action": "Transfer",
+      "amountKWh": 20,
+      "reason": "Prioritizing critical infrastructure. Hospital backup levels are dropping below the safety threshold."
+    }
+  },
+  {
+    "scenarioId": "REC-005",
+    "source": {
+      "batteryName": "Wind Farm Storage",
+      "level": 78
+    },
+    "destination": {
+      "batteryName": "Industrial Park Reserve",
+      "level": 30
+    },
+    "recommendation": {
+      "action": "Transfer",
+      "amountKWh": 8,
+      "reason": "Address localized energy deficit in the industrial sector utilizing overnight wind generation surplus."
+    }
+  }
+]
