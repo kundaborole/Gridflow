@@ -66,31 +66,8 @@ window.addEventListener("DOMContentLoaded", () => {
     btnPlay.addEventListener("click", togglePlay);
     if(btnRunDemo) btnRunDemo.addEventListener("click", runDemoScenario);
     
-    // Routing Listeners
-    document.querySelectorAll(".nav-item, .nav-link").forEach(elem => {
-        elem.addEventListener("click", (e) => {
-            e.preventDefault();
-            const view = elem.getAttribute("data-view");
-            if (view) switchView(view);
-        });
-    });
-    
-    // Sidebar Hamburger toggle
-    const hamburgerBtn = document.getElementById("hamburger-btn");
-    const sidebar = document.getElementById("sidebar");
-    if (hamburgerBtn && sidebar) {
-        hamburgerBtn.addEventListener("click", () => {
-            sidebar.classList.toggle("collapsed");
-        });
-    }
-    
-    // Mobile Hamburger Overlay toggle
-    const mobileHamburgerBtn = document.getElementById("mobile-hamburger-btn");
-    if (mobileHamburgerBtn && sidebar) {
-        mobileHamburgerBtn.addEventListener("click", () => {
-            sidebar.classList.toggle("mobile-open");
-        });
-    }
+    // Initialize scrolling command center features
+    initScrollFeatures();
 });
 
 // Fetch configuration from API
@@ -586,50 +563,78 @@ function runDemoScenario() {
     demoInterval = setInterval(advanceDemo, 4000);
 }
 
-// View switching routing logic
-function switchView(viewName) {
-    activeView = viewName;
-    
-    // Hide all views
-    document.querySelectorAll(".view-section").forEach(sec => {
-        sec.style.display = "none";
-        sec.classList.remove("active");
-    });
-    
-    // Show selected view
-    const targetSec = document.getElementById("view-" + viewName);
-    if (targetSec) {
-        targetSec.style.display = "block";
-        targetSec.classList.add("active");
-    }
-    
-    // Update active states
-    document.querySelectorAll(".nav-item").forEach(item => {
-        if (item.getAttribute("data-view") === viewName) {
-            item.classList.add("active");
-        } else {
-            item.classList.remove("active");
+// Scroll progress, smooth navigation, and IntersectionObserver setup
+function initScrollFeatures() {
+    // 1. Scroll progress bar listener
+    const progressBar = document.getElementById("scroll-progress");
+    window.addEventListener("scroll", () => {
+        if (!progressBar) return;
+        const totalScrollable = document.documentElement.scrollHeight - window.innerHeight;
+        if (totalScrollable <= 0) {
+            progressBar.style.width = "0%";
+            return;
         }
+        const percentage = (window.scrollY / totalScrollable) * 100;
+        progressBar.style.width = `${percentage}%`;
     });
-    
+
+    // 2. Navbar links smooth scroll listener
     document.querySelectorAll(".nav-link").forEach(link => {
-        if (link.getAttribute("data-view") === viewName) {
-            link.classList.add("active");
-        } else {
-            link.classList.remove("active");
-        }
+        link.addEventListener("click", (e) => {
+            e.preventDefault();
+            const targetId = link.getAttribute("href");
+            const targetElem = document.querySelector(targetId);
+            if (targetElem) {
+                targetElem.scrollIntoView({ behavior: "smooth" });
+            }
+        });
     });
-    
-    // Close mobile overlay
-    const sidebar = document.getElementById("sidebar");
-    if (sidebar) {
-        sidebar.classList.remove("mobile-open");
-    }
-    
-    // Re-render charts or elements for newly loaded view
-    if (lastReceivedData) {
-        renderViewSpecifics(lastReceivedData);
-    }
+
+    // 3. IntersectionObserver for active navbar links highlighting
+    const navObserverOptions = {
+        root: null,
+        rootMargin: "-20% 0px -60% 0px", // look at the center region of viewport
+        threshold: 0
+    };
+
+    const navObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const targetId = entry.target.id;
+                const viewName = targetId.replace("view-", "");
+                
+                document.querySelectorAll(".nav-link").forEach(link => {
+                    if (link.getAttribute("data-view") === viewName) {
+                        link.classList.add("active");
+                    } else {
+                        link.classList.remove("active");
+                    }
+                });
+            }
+        });
+    }, navObserverOptions);
+
+    // 4. Separate IntersectionObserver for section entry fade/slide animations (Run once)
+    const animationObserverOptions = {
+        root: null,
+        rootMargin: "0px",
+        threshold: 0.15 // trigger when 15% visible
+    };
+
+    const animationObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add("in-view");
+                animationObserver.unobserve(entry.target); // disable future triggers on scroll
+            }
+        });
+    }, animationObserverOptions);
+
+    // Observe all sections for both navbar highlights and scroll animations
+    document.querySelectorAll(".view-section").forEach(sec => {
+        navObserver.observe(sec);
+        animationObserver.observe(sec);
+    });
 }
 
 // Render values specifically inside Storage, Sustainability, and Engine views
@@ -693,9 +698,7 @@ function renderViewSpecifics(data) {
     }
     
     // Battery trend chart
-    if (activeView === "storage") {
-        renderBatteryTrendChart(socPct);
-    }
+    renderBatteryTrendChart(socPct);
     
     // --- SUSTAINABILITY VIEW ---
     const sustValCo2 = document.getElementById("sust-val-co2");
@@ -714,9 +717,7 @@ function renderViewSpecifics(data) {
         sustValSsr.innerText = Math.max(0, Math.min(100, ssr)).toFixed(1);
     }
     
-    if (activeView === "sustainability") {
-        renderSustainabilityCostChart(sust);
-    }
+    renderSustainabilityCostChart(sust);
     
     // --- ENGINE CONFIG VIEW ---
     updateEngineConfigBadges(data);

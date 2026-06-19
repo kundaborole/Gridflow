@@ -13,66 +13,38 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-    <!-- Mobile Hamburger Overlay Button -->
-    <button id="mobile-hamburger-btn" class="mobile-hamburger-btn" title="Open Navigation Menu">
-        <i class="fa-solid fa-bars"></i>
-    </button>
+    <!-- Scroll Progress Bar -->
+    <div class="scroll-progress-container">
+        <div id="scroll-progress" class="scroll-progress-bar"></div>
+    </div>
 
     <div class="app-container">
-        <!-- Sidebar Navigation -->
-        <aside class="sidebar" id="sidebar">
-            <div class="brand">
-                <i class="fa-solid fa-bolt brand-icon"></i>
-                <div class="brand-text">
-                    <h1>GridFlow AI</h1>
-                    <span>Hackathon MVP v1.0</span>
+        <!-- Sticky Top Navbar -->
+        <header class="top-navbar">
+            <div class="navbar-left">
+                <div class="navbar-brand">
+                    <i class="fa-solid fa-bolt brand-icon"></i>
+                    <h2>GridFlow AI</h2>
                 </div>
             </div>
-            <nav class="nav-menu">
-                <a href="#" class="nav-item active" data-view="dashboard"><i class="fa-solid fa-chart-line"></i> <span class="nav-label">Dashboard</span></a>
-                <a href="#" class="nav-item" data-view="storage"><i class="fa-solid fa-battery-three-quarters"></i> <span class="nav-label">Storage</span></a>
-                <a href="#" class="nav-item" data-view="sustainability"><i class="fa-solid fa-leaf"></i> <span class="nav-label">Sustainability</span></a>
-                <a href="#" class="nav-item" data-view="engine-config"><i class="fa-solid fa-gears"></i> <span class="nav-label">Engine Config</span></a>
+            
+            <nav class="navbar-links">
+                <a href="#view-dashboard" class="nav-link active" data-view="dashboard">Dashboard</a>
+                <a href="#view-storage" class="nav-link" data-view="storage">Storage</a>
+                <a href="#view-sustainability" class="nav-link" data-view="sustainability">Sustainability</a>
+                <a href="#view-engine-config" class="nav-link" data-view="engine-config">Engine Config</a>
             </nav>
-            <div class="sidebar-footer">
-                <div class="connection-status">
-                    <span class="status-dot green" id="sidebar-api-dot"></span>
-                    <span class="nav-label" id="sidebar-api-text">API Connected</span>
-                </div>
+            
+            <div class="navbar-status">
+                <span id="indicator-api" class="status-indicator online"><span class="dot"></span> API Connected</span>
+                <span id="indicator-gemini" class="status-indicator online"><i class="fa-solid fa-robot"></i> Gemini Active</span>
+                <span id="indicator-weather" class="status-indicator online"><i class="fa-solid fa-cloud"></i> Weather Live</span>
             </div>
-        </aside>
+        </header>
 
-        <!-- Right Side Workspace Container -->
-        <div class="workspace-container">
-            <!-- Sticky Top Navbar -->
-            <header class="top-navbar">
-                <div class="navbar-left">
-                    <button id="hamburger-btn" class="hamburger-btn" title="Toggle Sidebar">
-                        <i class="fa-solid fa-bars"></i>
-                    </button>
-                    <div class="navbar-brand">
-                        <i class="fa-solid fa-bolt brand-icon"></i>
-                        <h2>GridFlow AI</h2>
-                    </div>
-                </div>
-                
-                <nav class="navbar-links">
-                    <a href="#" class="nav-link active" data-view="dashboard">Dashboard</a>
-                    <a href="#" class="nav-link" data-view="storage">Storage</a>
-                    <a href="#" class="nav-link" data-view="sustainability">Sustainability</a>
-                    <a href="#" class="nav-link" data-view="engine-config">Engine Config</a>
-                </nav>
-                
-                <div class="navbar-status">
-                    <span id="indicator-api" class="status-indicator online"><span class="dot"></span> API Connected</span>
-                    <span id="indicator-gemini" class="status-indicator online"><i class="fa-solid fa-robot"></i> Gemini Active</span>
-                    <span id="indicator-weather" class="status-indicator online"><i class="fa-solid fa-cloud"></i> Weather Live</span>
-                </div>
-            </header>
-
-            <!-- Main Scrollable Content -->
-            <main class="main-content">
-                <!-- VIEW 1: Dashboard (Hero View) -->
+        <!-- Main Scrollable Content -->
+        <main class="main-content">
+            <!-- VIEW 1: Dashboard (Hero View) -->
                 <section class="view-section active" id="view-dashboard">
                     <!-- Top Navigation / Header -->
                     <header class="header">
@@ -188,9 +160,11 @@
                                     <span class="ba-label">After AI</span>
                                     <span id="val-battery-after" class="ba-value after">0.0%</span>
                                 </div>
-                            </div>
-                            <div class="ba-improvement">
-                                Improvement: <span id="val-battery-diff">+0.0%</span>
+                                <div class="ba-divider"><i class="fa-solid fa-arrow-right"></i></div>
+                                <div class="ba-col">
+                                    <span class="ba-label">Improvement</span>
+                                    <span id="val-battery-diff" class="ba-value improvement">+0.0%</span>
+                                </div>
                             </div>
                         </div>
 
@@ -288,7 +262,7 @@
                                     <span class="g-label">Expected Benefit:</span>
                                     <p id="gemini-rec-benefit">System online shortly.</p>
                                 </div>
-                                <div class="gemini-weather-insight" style="margin-top: 12px; padding: 12px; background: rgba(0, 217, 255, 0.05); border-left: 3px solid #00d9ff; border-radius: 4px;">
+                                <div class="gemini-weather-insight">
                                     <p id="gemini-weather-text" style="margin: 0; color: #00d9ff; font-size: 0.95rem;">
                                         <i class="fa-solid fa-satellite"></i> GridFlow can ingest live weather signals to improve future forecasting.
                                     </p>
@@ -309,13 +283,13 @@
                 </section>
 
                 <!-- VIEW 2: Storage Intelligence View -->
-                <section class="view-section" id="view-storage" style="display: none;">
+                <section class="view-section" id="view-storage">
                     <header class="header">
                         <div class="header-title">
                             <h2>Storage Intelligence</h2>
                             <p>Battery State of Charge, Health, charging rates, and historical analytics</p>
                         </div>
-                    </section>
+                    </header>
                     
                     <section class="metrics-grid">
                         <div class="metric-card card glow-green">
@@ -412,13 +386,13 @@
                 </section>
 
                 <!-- VIEW 3: Sustainability View -->
-                <section class="view-section" id="view-sustainability" style="display: none;">
+                <section class="view-section" id="view-sustainability">
                     <header class="header">
                         <div class="header-title">
                             <h2>Sustainability & ESG Intelligence</h2>
                             <p>Environmental metrics, Carbon reduction statistics, and Self-Sufficiency analytics</p>
                         </div>
-                    </section>
+                    </header>
                     
                     <section class="metrics-grid">
                         <div class="metric-card card glow-green">
@@ -504,13 +478,13 @@
                 </section>
 
                 <!-- VIEW 4: Engine Config View -->
-                <section class="view-section" id="view-engine-config" style="display: none;">
+                <section class="view-section" id="view-engine-config">
                     <header class="header">
                         <div class="header-title">
                             <h2>Engine Monitoring & Diagnostics</h2>
                             <p>Real-time status overview of GridFlow AI core intelligence microservices</p>
                         </div>
-                    </section>
+                    </header>
 
                     <div class="metrics-grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
                         <!-- Card for each engine -->
@@ -592,6 +566,11 @@
                         </div>
                     </div>
                 </section>
+                
+                <!-- Footer -->
+                <footer class="main-footer">
+                    <p>&copy; 2026 GridFlow AI. Built for the Microgrid Intelligence Hackathon.</p>
+                </footer>
             </main>
         </div>
     </div>
