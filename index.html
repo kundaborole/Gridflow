@@ -1604,11 +1604,20 @@
 
     <!-- Global JS Logic -->
     <script>
+        // =====================================================================
+        // GRIDFLOW AI — LIVE API INTEGRATION LAYER
+        // Backend: http://localhost:8000
+        // =====================================================================
+        const API_BASE = 'http://localhost:8000/api';
+        let currentHour = new Date().getHours();
+        let apiConnected = false;
+
         // Shared State Object
         const state = {
             activeTab: 'overview',
             simulating: true,
             networkConfidence: 98.4,
+            hour: currentHour,
             kpis: {
                 overview: {
                     solar: 42.8,
@@ -1636,6 +1645,299 @@
                 }
             }
         };
+
+        // ─── API FETCH HELPERS ────────────────────────────────────────────────
+
+        async function fetchStatus(hour) {
+            const res = await fetch(`${API_BASE}/status?hour=${hour}`);
+            if (!res.ok) throw new Error(`Status API ${res.status}`);
+            return res.json();
+        }
+
+        async function fetchWeather(hour) {
+            const res = await fetch(`${API_BASE}/live-weather?hour=${hour}`);
+            if (!res.ok) throw new Error(`Weather API ${res.status}`);
+            return res.json();
+        }
+
+        // ─── DOM BINDERS ──────────────────────────────────────────────────────
+
+        function setText(id, value) {
+            const el = document.getElementById(id);
+            if (el) el.textContent = value;
+        }
+
+        function setWidth(id, pct) {
+            const el = document.getElementById(id);
+            if (el) el.style.width = `${Math.min(100, Math.max(0, pct))}%`;
+        }
+
+        // ─── FULL DASHBOARD BIND ──────────────────────────────────────────────
+
+        function bindOverview(status, weather) {
+            const cur  = status.current_state || {};
+            const bal  = status.balancing || {};
+            const sus  = status.sustainability || {};
+            const risks = status.risks || [];
+
+            // KPI Row
+            const solar   = (cur.solar_generation || 0).toFixed(1);
+            const demand  = (cur.total_demand || 0).toFixed(1);
+            const batLvl  = cur.battery_level || 0;
+            const batSoC  = Math.round((batLvl / 500.0) * 100);
+            const imp     = bal.grid_import || 0;
+            const exp     = bal.grid_export || 0;
+            const gridNet = (imp - exp).toFixed(1);
+
+            setText('kpi-overview-solar',   solar);
+            setText('kpi-overview-demand',  demand);
+            setText('kpi-overview-battery', batSoC);
+            setText('kpi-overview-grid',    Math.abs(gridNet));
+
+            // Battery panel - temp from weather
+            const temp = weather.temperature || 24.2;
+            setText('overview-battery-temp', `${temp} °C`);
+
+            // Sustainability
+            const co2kg   = sus.co2_offset_kg || 0;
+            const co2Tons = (co2kg / 1000).toFixed(1);
+            const selfSuf = (sus.self_sufficiency_ratio || 0).toFixed(1);
+            setText('overview-sustain-offset', co2Tons);
+            setText('overview-sustain-share',  selfSuf);
+
+            // Grid Health banner (if element exists)
+            const gridHealthEl = document.getElementById('grid-health-status');
+            if (gridHealthEl) gridHealthEl.textContent = status.gridHealth || 'Nominal';
+
+            // Network confidence from API confidence field
+            const conf = status.confidence || 98.4;
+            state.networkConfidence = conf;
+            setText('global-confidence-val', conf.toFixed(1));
+        }
+
+        function bindForecast(status) {
+            const cur  = status.current_state || {};
+            const bal  = status.balancing || {};
+            const history = status.decision_history || [];
+
+            const solar   = cur.solar_generation || 0;
+            const demand  = cur.total_demand || 0;
+            const batLvl  = cur.battery_level || 0;
+            const batUtil = Math.round((batLvl / 500.0) * 100);
+
+            setText('forecast-kpi-peak-demand',  demand.toFixed(1));
+            setText('forecast-kpi-solar-output', solar.toFixed(1));
+            setText('forecast-kpi-battery-util', batUtil);
+
+            // Accuracy is static for now (model metric)
+            const accVal = 96.2;
+            setText('forecast-kpi-accuracy', accVal);
+            setWidth('forecast-accuracy-bar', accVal);
+
+            // Weather panel in forecast tab
+            const now = new Date();
+            setText('forecast-weather-time', now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+
+            // Risk monitor from real risk data
+            if (status.risks && status.risks.length > 0) {
+                const criticals = status.risks.filter(r => r.level === 'critical').length;
+                const warnings  = status.risks.filter(r => r.level === 'warning').length;
+                const spikePct  = Math.min(99, criticals * 35 + warnings * 15 + 5);
+                const shortPct  = Math.min(99, criticals * 20 + warnings * 10);
+                const stabPct   = Math.max(50, 100 - criticals * 20 - warnings * 8);
+                const thermPct  = Math.min(60, Math.abs(bal.battery_rate || 0) * 0.5 + 5);
+
+                setText('risk-val-spike',     `${spikePct}%`);
+                setText('risk-val-shortage',  `${shortPct}%`);
+                setText('risk-val-stability', `${stabPct}%`);
+                setText('risk-val-thermal',   `${thermPct.toFixed(0)}%`);
+
+                setWidth('risk-bar-spike',     spikePct);
+                setWidth('risk-bar-shortage',  shortPct);
+                setWidth('risk-bar-stability', stabPct);
+                setWidth('risk-bar-thermal',   thermPct);
+            }
+        }
+
+        function bindWeather(weather) {
+            const temp       = weather.temperature || 0;
+            const cloud      = weather.cloud_cover || 0;
+            const irradiance = Math.round(1000 * (1 - cloud / 100) * Math.max(0, Math.sin((state.hour / 24) * Math.PI)));
+            const wind       = Math.round(8 + Math.random() * 12);
+
+            setText('weather-temp-val',       `${temp}°C`);
+            setText('weather-cloud-val',      `${cloud}%`);
+            setText('weather-irradiance-val', `${irradiance} W/m²`);
+            setText('weather-wind-val',       `${wind} km/h`);
+        }
+
+        function bindSharing(status) {
+            const cur = status.current_state || {};
+            const sus = status.sustainability || {};
+            const bal = status.balancing || {};
+
+            const solar  = cur.solar_generation || 0;
+            const demand = cur.total_demand || 0;
+            const surplus = Math.max(0, solar - demand);
+            const sharedToday = Math.round(surplus * 24 * 0.72);
+            const efficiency  = (sus.self_sufficiency_ratio || 94.2).toFixed(1);
+            const transfers   = Math.round(10 + (bal.grid_export || 0) * 0.3);
+
+            setText('sharing-kpi-transfers',   `${transfers} Nodes`);
+            setText('sharing-kpi-shared-today',`${sharedToday.toLocaleString()} kWh`);
+            setText('sharing-kpi-efficiency',  `${efficiency}%`);
+        }
+
+        function bindSustainability(status) {
+            const sus = status.sustainability || {};
+            const co2   = (sus.co2_offset_kg  || 0).toFixed(1);
+            const renew = (sus.self_sufficiency_ratio || 0).toFixed(1);
+            const savings = (status.costSaved || 0).toFixed(2);
+            const score = Math.round(Math.min(100, (sus.self_sufficiency_ratio || 0)));
+
+            setText('sustain-kpi-co2',        co2);
+            setText('sustain-kpi-renewable',  renew);
+            setText('sustain-kpi-score',      score);
+            setText('sustain-kpi-savings',    `$${savings}`);
+
+            setWidth('sustain-renewable-progress', parseFloat(renew));
+        }
+
+        // ─── DECISION TIMELINE (LOG BOX) ─────────────────────────────────────
+
+        function bindDecisionLog(status) {
+            const history = status.decision_history || [];
+            const logBox  = document.getElementById('transfer-activity-log-box');
+            if (!logBox || !history.length) return;
+
+            // Only inject top item to avoid full re-render
+            const item = history[0];
+            const statusColor = item.status === 'Nominal'
+                ? 'text-secondary-fixed-dim'
+                : 'text-error';
+            const timeStr = item.timestamp || new Date().toLocaleTimeString();
+            const msg = `[${item.action}] ${item.tariff_zone} @ ${item.rate} kW — ${item.status}`;
+
+            const logRow = document.createElement('div');
+            logRow.className = `flex gap-3 ${statusColor} opacity-0 transition-all duration-500`;
+            logRow.innerHTML = `<span class="opacity-50">${timeStr}</span> <span>${msg}</span>`;
+            logBox.prepend(logRow);
+            setTimeout(() => logRow.classList.remove('opacity-0'), 50);
+
+            if (logBox.children.length > 20) {
+                logBox.lastElementChild.remove();
+            }
+        }
+
+        // ─── API STATUS BANNER ────────────────────────────────────────────────
+
+        function setApiStatusBanner(ok, msg) {
+            apiConnected = ok;
+            // Update the top header sync icon visually
+            const syncBtn = document.querySelector('button[title="Grid Sync"]');
+            if (syncBtn) {
+                syncBtn.title = ok ? '✅ Backend Connected' : `⚠️ ${msg}`;
+                syncBtn.style.color = ok ? '#2ae500' : '#ffb4ab';
+            }
+        }
+
+        // ─── MAIN POLLING LOOP ────────────────────────────────────────────────
+
+        async function pollApi() {
+            if (!state.simulating) return;
+
+            try {
+                const [status, weather] = await Promise.all([
+                    fetchStatus(state.hour),
+                    fetchWeather(state.hour)
+                ]);
+
+                setApiStatusBanner(true, 'OK');
+
+                // Bind all modules
+                bindOverview(status, weather);
+                bindForecast(status);
+                bindWeather(weather);
+                bindSharing(status);
+                bindSustainability(status);
+                bindDecisionLog(status);
+
+                // Slightly animate the SVG chart line
+                const line = document.getElementById('overview-chart-line');
+                if (line) {
+                    const shiftY = (Math.random() - 0.5) * 10;
+                    line.setAttribute('d', `M0 240 C 100 180, 200 ${200 + shiftY}, 300 ${120 + shiftY} S 500 80, 600 140 S 750 100, 800 120`);
+                }
+
+                // Advance hour for simulation
+                state.hour = (state.hour + 1) % 8760;
+
+                // Map metrics fluctuate
+                const mapLoad = document.getElementById('map-load-val');
+                if (mapLoad) {
+                    const val = Math.floor(65 + Math.random() * 15);
+                    mapLoad.textContent = `${val}%`;
+                }
+
+            } catch (err) {
+                console.warn('GridFlow API unreachable, running local fallback:', err.message);
+                setApiStatusBanner(false, err.message);
+
+                // Fallback: gentle KPI fluctuation (original mock behaviour)
+                state.networkConfidence = parseFloat((state.networkConfidence + (Math.random() - 0.5) * 0.15).toFixed(2));
+                if (state.networkConfidence > 99.9) state.networkConfidence = 99.9;
+                if (state.networkConfidence < 97.0) state.networkConfidence = 97.0;
+                setText('global-confidence-val', state.networkConfidence);
+
+                state.kpis.overview.solar  = parseFloat((state.kpis.overview.solar  + (Math.random() - 0.5) * 0.3).toFixed(1));
+                state.kpis.overview.demand = parseFloat((state.kpis.overview.demand + (Math.random() - 0.5) * 0.2).toFixed(1));
+                setText('kpi-overview-solar',  state.kpis.overview.solar);
+                setText('kpi-overview-demand', state.kpis.overview.demand);
+
+                if (Math.random() > 0.8) {
+                    state.kpis.sustainability.co2 = parseFloat((state.kpis.sustainability.co2 + Math.random() * 0.5).toFixed(1));
+                    setText('sustain-kpi-co2', state.kpis.sustainability.co2);
+                }
+
+                const line = document.getElementById('overview-chart-line');
+                if (line) {
+                    const shiftY = (Math.random() - 0.5) * 10;
+                    line.setAttribute('d', `M0 240 C 100 180, 200 ${200 + shiftY}, 300 ${120 + shiftY} S 500 80, 600 140 S 750 100, 800 120`);
+                }
+
+                // Sharing log fallback
+                const logBox = document.getElementById('transfer-activity-log-box');
+                if (logBox && Math.random() > 0.6) {
+                    const colors = ['text-primary-fixed-dim', 'text-secondary-fixed-dim', 'text-on-surface-variant', 'text-error'];
+                    const prefix = ['[FLOW]', '[OK]', '[INFO]', '[WARN]'];
+                    const msgs = [
+                        'Balancing Phase-3 distribution grid',
+                        'Efficiency target met at HUB-01',
+                        'Diverting solar overflow to BESS-02',
+                        'Community B load spike detected (+4%)',
+                        'Handshake verified: Community D routing node',
+                        'Net zero ESG optimization path compiled'
+                    ];
+                    const randColor  = colors[Math.floor(Math.random() * colors.length)];
+                    const randPrefix = prefix[Math.floor(Math.random() * prefix.length)];
+                    const randMsg    = msgs[Math.floor(Math.random() * msgs.length)];
+                    const timeStr    = new Date().toLocaleTimeString();
+                    const logRow     = document.createElement('div');
+                    logRow.className = `flex gap-3 ${randColor} opacity-0 transition-all duration-500`;
+                    logRow.innerHTML = `<span class="opacity-50">${timeStr}</span> <span>${randPrefix} ${randMsg}</span>`;
+                    logBox.prepend(logRow);
+                    setTimeout(() => logRow.classList.remove('opacity-0'), 50);
+                    if (logBox.children.length > 20) logBox.lastElementChild.remove();
+                }
+
+                const mapLoad = document.getElementById('map-load-val');
+                if (mapLoad) mapLoad.textContent = `${Math.floor(65 + Math.random() * 15)}%`;
+            }
+        }
+
+        // Kick off initial fetch immediately, then poll every 5 seconds
+        pollApi();
+        setInterval(pollApi, 5000);
 
         // Navigation Switcher with Glassmorphic Transition Effect
         function switchTab(tabId) {
@@ -1706,74 +2008,7 @@
             }
         }
 
-        // Simulation update generator
-        setInterval(() => {
-            if (!state.simulating) return;
 
-            // Fluctuating confidence slightly
-            state.networkConfidence = parseFloat((state.networkConfidence + (Math.random() - 0.5) * 0.15).toFixed(2));
-            if (state.networkConfidence > 99.9) state.networkConfidence = 99.9;
-            if (state.networkConfidence < 97.0) state.networkConfidence = 97.0;
-            document.getElementById('global-confidence-val').textContent = state.networkConfidence;
-
-            // Overview updates
-            state.kpis.overview.solar = parseFloat((state.kpis.overview.solar + (Math.random() - 0.5) * 0.3).toFixed(1));
-            state.kpis.overview.demand = parseFloat((state.kpis.overview.demand + (Math.random() - 0.5) * 0.2).toFixed(1));
-            document.getElementById('kpi-overview-solar').textContent = state.kpis.overview.solar;
-            document.getElementById('kpi-overview-demand').textContent = state.kpis.overview.demand;
-
-            // Slightly animate path shapes to look alive
-            const line = document.getElementById('overview-chart-line');
-            if (line) {
-                const shiftY = (Math.random() - 0.5) * 10;
-                line.setAttribute('d', `M0 240 C 100 180, 200 ${200 + shiftY}, 300 ${120 + shiftY} S 500 80, 600 140 S 750 100, 800 120`);
-            }
-
-            // Sharing logs append
-            const logBox = document.getElementById('transfer-activity-log-box');
-            if (logBox && Math.random() > 0.6) {
-                const colors = ['text-primary-fixed-dim', 'text-secondary-fixed-dim', 'text-on-surface-variant', 'text-error'];
-                const prefix = ['[FLOW]', '[OK]', '[INFO]', '[WARN]'];
-                const msgs = [
-                    'Balancing Phase-3 distribution grid',
-                    'Efficiency target met at HUB-01',
-                    'Diverting solar overflow to BESS-02',
-                    'Community B load spike detected (+4%)',
-                    'Handshake verified: Community D routing node',
-                    'Net zero ESG optimization path compiled'
-                ];
-                
-                const randColor = colors[Math.floor(Math.random() * colors.length)];
-                const randPrefix = prefix[Math.floor(Math.random() * prefix.length)];
-                const randMsg = msgs[Math.floor(Math.random() * msgs.length)];
-                const timeStr = new Date().toLocaleTimeString();
-
-                const logRow = document.createElement('div');
-                logRow.className = `flex gap-3 ${randColor} opacity-0 transition-all duration-500`;
-                logRow.innerHTML = `<span class="opacity-50">${timeStr}</span> <span>${randPrefix} ${randMsg}</span>`;
-                
-                logBox.prepend(logRow);
-                setTimeout(() => logRow.classList.remove('opacity-0'), 50);
-
-                if (logBox.children.length > 20) {
-                    logBox.lastElementChild.remove();
-                }
-            }
-
-            // Map metrics fluctuate
-            const mapLoad = document.getElementById('map-load-val');
-            if (mapLoad) {
-                const val = Math.floor(65 + Math.random() * 15);
-                mapLoad.textContent = `${val}%`;
-            }
-
-            // Sustainability KPI fluctuations
-            if (Math.random() > 0.8) {
-                state.kpis.sustainability.co2 = parseFloat((state.kpis.sustainability.co2 + Math.random() * 0.5).toFixed(1));
-                document.getElementById('sustain-kpi-co2').textContent = state.kpis.sustainability.co2;
-            }
-
-        }, 4000);
 
         // Actions trigger function
         function triggerAction(actionName) {
